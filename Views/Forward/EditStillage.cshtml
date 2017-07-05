@@ -1,0 +1,487 @@
+﻿
+@{
+    ViewBag.Title = "EditStillage";
+}
+
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Datepicker/datepicker3.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12"  id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left;width:260px;">
+            @*<div>
+                <h5>装箱-状态:</h5>
+            </div>*@
+            <div class="box-header">
+                <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_PJ"></select>
+                <div id='Spread_List' style='width: 100%; margin-top:5px; height: 746px;'></div>
+            </div>
+        </div>
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left; width:calc(100% - 260px);">
+            <div class="box-header">
+                <table>
+                    <tr style="height:36px">
+                        <td width="70px" style="padding-left:10px"><span style="font-size:14px">包装箱号:</span></td>
+                        <td width="150px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="包装箱号" id="DeliveryNote">
+                        </td>
+                        <td width="100px" style="padding-left:10px"><span style="font-size:14px">计划装箱日期:</span></td>
+                        <td width="170px" style="padding-left:10px">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control pull-right" id="planedate" type="text">
+                            </div>
+                        </td>
+                        <td width="50px" style="padding-left:10px"><span style="font-size:14px">类型:</span></td>
+                        <td width="120px" style="padding-left:10px">
+                            <select class="form-control js-example-basic-single" style="width : 100%" id="Stillage_Type">
+                                <option value="1">铁架</option>
+                                <option value="2">木箱</option>
+                                <option value="3">托盘</option>
+                            </select>
+                            @*<input class="form-control input-sm" type="text" placeholder="类型:" id="Stillage_Type">*@
+                        </td>
+                        <td width="21%" style="padding-left:10px"><span style="font-size:14px">说明:</span></td>
+                    </tr>
+                    <tr style="height:36px">
+                        <td width="70px" style="padding-left:10px"><span style="font-size:14px">供货方:</span></td>
+                        <td width="150px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="供货方" value="CNYD" id="Goods_PreparedBy">
+                        </td>
+                        <td width="100px" style="padding-left:10px"><span style="font-size:14px">实际装箱日期:</span></td>
+                        <td width="170px" style="padding-left:10px">
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input class="form-control pull-right" id="actualdate" type="text">
+                            </div>
+                        </td>
+                        <td width="50px" style="padding-left:10px"><span style="font-size:14px">宽:</span></td>
+                        <td width="120px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="宽" id="Width">
+                        </td>
+                        <td rowspan="3" align="center">
+                            <div style="margin-left:10px">
+                                <textarea class="form-control" rows="3" placeholder="Enter ..." id="Comments"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="height:36px">
+                        <td width="70px" style="padding-left:10px"><span style="font-size:14px">收货方:</span></td>
+                        <td width="150px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="收货方" id="Goods_PreparedFor">
+                        </td>
+                        <td width="100px" style="padding-left:10px"><span style="font-size:14px">状态:</span></td>
+                        <td width="170px" style="padding-left:10px">
+                            <input class="form-control input-sm" disabled="disabled" type="text" placeholder="状态:" id="Stillage_Status">
+                            @*<select class="form-control js-example-basic-single" style="width : 100%" id="Stillage_Status">
+                                <option value="1">空箱</option>
+                                <option value="2">已包装</option>
+                                <option value="3">已装入集装箱</option>
+                            </select>*@
+                        </td>
+                        <td width="50px" style="padding-left:10px"><span style="font-size:14px">长:</span></td>
+                        <td width="120px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="长" id="Length">
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr style="height:36px">
+                        <td width="70px" style="padding-left:10px"><span style="font-size:14px">集装箱号:</span></td>
+                        <td width="150px" style="padding-left:10px">
+                            <input class="form-control input-sm" disabled ="disabled" type="text" placeholder="集装箱号">
+                        </td>
+                        <td width="100px" style="padding-left:10px"><span style="font-size:14px">重量:</span></td>
+                        <td width="170px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="重量" id="Weight">
+                        </td>
+                        <td width="50px" style="padding-left:10px"><span style="font-size:14px">高:</span></td>
+                        <td width="120px" style="padding-left:10px">
+                            <input class="form-control input-sm" type="text" placeholder="高" id="Height">
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="btn-group" style='margin-left:2px;'>
+                            <button class="btn btn-primary" type="button" id="btn_add" disabled="disabled">
+                                <span class="fa fa-plus"></span>&nbsp;添加
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btn_Save" disabled="disabled">
+                                <span class="fa fa-save"></span>&nbsp;保存
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btn_Delete" disabled="disabled">
+                                <span class="fa fa-times"></span>&nbsp;删除
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btn_Count" disabled="disabled">
+                                <span class="fa fa-building"></span>&nbsp;计算
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btn_confirm" disabled="disabled">
+                                <span class="fa fa-bookmark"></span>&nbsp;确认
+                            </button>
+                        </div>
+                        <button class="btn btn-success" type="button" id="btn_Create">
+                            <span class="fa fa-tag"></span>&nbsp;创建
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id='MianSpread' style='width: 100%; height: 600px; margin-left:3px;margin-right:3px;'></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.zh-CN.js"></script>
+<script src="~/Scripts/resize.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var spread_list;
+    var sheet_list;
+    var sheet;
+    var StillageID;
+    var Pro_ID;
+    var NewCreate;
+    var colInfos = [
+        { name: 'BT_Code', displayName: 'BT编号', size: 80, visible: true, formatter: Text },
+        { name: 'Description_EN', displayName: 'BT英文描述', size: 140, formatter: Text },
+        { name: 'Description_CN', displayName: 'BT中文描述', size: 140, formatter: Text },
+        { name: 'Units', displayName: '单位', size: 60, resizable: false, formatter: Text },
+        { name: 'Amount', displayName: '包装数量', size: 90, resizable: false, formatter: Number },
+        { name: 'Qty', displayName: '总量', size: 90, resizable: false, formatter: Number },
+        { name: 'margin', displayName: '剩余量', size: 90, resizable: false, formatter: Number },
+        { name: 'TA_CODE', displayName: 'TA编码', size: 90, formatter: Text },
+        { name: 'Card_Code', displayName: '单号', size: 100, formatter: Text },
+        { name: 'BTID', size: 100, formatter: Text, visible: false },
+        { name: 'ProID', size: 100, formatter: Text, visible: false },
+        { name: 'StillageID', size: 100, formatter: Text, visible: false }
+    ];
+    var colInfoslist = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'DeliveryNote', displayName: '箱号', size: 110, visible: true, formatter: Text },
+        { name: 'Stillage_Status', displayName: '状态', size: 110, formatter: Text },
+    ];
+    $(function () {
+        
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        spread.options.allowCopyPasteExcelStyle = false;
+        sheet = spread.getSheet(0);
+        SpreadInit(sheet);
+        var Data = [];
+        spread_list = new GC.Spread.Sheets.Workbook(document.getElementById('Spread_List'), { sheetCount: 1 });
+
+        $("#planedate").datepicker({
+            language: "zh-CN",
+            autoclose: true,//选中之后自动隐藏日期选择框
+            clearBtn: true,//清除按钮
+            todayBtn: true,//今日按钮
+            format: "yyyy-mm-dd"//日期格式
+        });
+
+        $("#actualdate").datepicker({
+            language: "zh-CN",
+            autoclose: true,//选中之后自动隐藏日期选择框
+            clearBtn: true,//清除按钮
+            todayBtn: true,//今日按钮
+            format: "yyyy-mm-dd"//日期格式
+        });
+
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+
+        $("#Choise_PJ").on("select2:select", function (e) {
+            Pro_ID = $("#Choise_PJ").val();
+            $.get('/Forward/GetStill', { 'PJ_ID_': Pro_ID }, function (result) {
+                if (result.Msg == "success") {
+                    Spread_listInit(result.Data);
+                }
+            });
+        });
+
+        $("#Stillage_Type").select2({
+            language: "zh-CN",
+            placeholder: "请选择类型..."
+        }).val(null).trigger("change");
+        $('#btn_add,#btn_Save,#btn_Delete,#btn_Count,#btn_confirm').prop("disabled", true);
+    });
+
+    function SpreadInit(sheet) {
+
+        sheet.setColumnCount(12, GC.Spread.Sheets.SheetArea.viewport);
+        //列宽
+        sheet.setColumnWidth(0, 80);
+        sheet.setColumnWidth(1, 140);
+        sheet.setColumnWidth(2, 140);
+        sheet.setColumnWidth(3, 60);
+        sheet.setColumnWidth(4, 90);
+        sheet.setColumnWidth(5, 90);
+        sheet.setColumnWidth(6, 90);
+        sheet.setColumnWidth(7, 90);
+        sheet.setColumnWidth(8, 100);
+        sheet.setColumnWidth(9, 100);
+        sheet.setColumnWidth(10, 100);
+        //列头文本
+        sheet.setValue(0, 0, "BT编号", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 1, "英文描述", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 2, "中文描述", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 3, "单位", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 4, "包装数量", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 5, "总量", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 6, "剩余量", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 7, "TA编码", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 8, "单号", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 9, "BTID", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setColumnVisible(9, false);
+        sheet.setColumnVisible(10, false);
+        sheet.setColumnVisible(11, false);
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 11));
+        sheet.setRowCount(0, GC.Spread.Sheets.SheetArea.viewport);
+        sheet.rowFilter(filter);
+    }
+
+    function Spread_listInit(Data)
+    {
+        sheet_list = spread_list.getSheet(0);
+        sheet_list.autoGenerateColumns = false;
+        sheet_list.bindColumns(colInfoslist);
+        sheet_list.setDataSource(Data);
+        Filter(sheet_list);
+        sheet_list.options.rowHeaderVisible = false;
+        sheet_list.invalidateLayout();
+        sheet_list.repaint();
+        var Click = GC.Spread.Sheets.Events.CellClick;
+        sheet_list.bind(Click, function (e, args) {
+            StillageID = sheet_list.getValue(args.row, 0);
+            $.post('/Forward/GetDataStillage', { 'StillageID': StillageID },
+                function (result) {
+                    if (result.Msg == "success")
+                    {
+                        $("#DeliveryNote").val(result.Head.DeliveryNote);
+                        $("#Goods_PreparedBy").val(result.Head.Goods_PreparedBy);
+                        $("#Goods_PreparedFor").val(result.Head.Goods_PreparedFor);
+                        $("#Shipping").val(result.Head.Shipping);
+                        $("#planedate").datepicker("setDate", result.Head.Planned_Packing_Date);
+                        $("#actualdate").datepicker("setDate", result.Head.Actual_Packing_Date);
+                        $("#Stillage_Status").val(result.Head.Stillage_Status);
+                        $("#Weight").val(result.Head.Weight);
+                        $("#Stillage_Type").val(result.Head.Stillage_Type).trigger('change');
+                        $("#Width").val(result.Head.Width);
+                        $("#Length").val(result.Head.Length);
+                        $("#Height").val(result.Head.Height);
+                        $("#Comments").val(result.Head.Comments);
+                        $('#btn_add,#btn_Save,#btn_Delete,#btn_Count,#btn_confirm').prop("disabled", false);
+                        //if (result.Data.length == 0)
+                        //{
+                        //    sheet.deleteRows(0, sheet.getRowCount());
+                        //    sheet.clearPendingChanges();
+                        //    SpreadInit(sheet);
+                        //    NewCreate = true;
+                        //}
+                        //else {
+                        //    sheet.autoGenerateColumns = false;
+                        //    sheet.bindColumns(colInfos);
+                        //    sheet.setDataSource(result.Data);
+                        //    Filter(sheet);
+                        //    NewCreate = false;
+                        //}
+                        sheet.autoGenerateColumns = false;
+                        sheet.bindColumns(colInfos);
+                        sheet.setDataSource(result.Data);
+                        Filter(sheet);
+                    }
+            });
+        });
+    }
+    //添加行
+    $('#btn_add').click(function () {
+        var row = sheet.getRowCount();
+        sheet.suspendPaint();
+        sheet.addRows(row, 1);
+        var row = sheet.getRowCount();
+        sheet.setFormatter(row - 1, 0, '@@');
+        sheet.setValue(row - 1, 10, Pro_ID);
+        sheet.setValue(row - 1, 11, StillageID);
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 9));
+        sheet.rowFilter(filter);
+        sheet.resumePaint();
+    });
+    //删除行
+    $('#btn_Delete').click(function () {
+        sheet.suspendPaint();
+        sheet.deleteRows(sheet.getActiveRowIndex(), 1); //行与列&选择单元格
+        sheet.resumePaint();
+    });
+    //存保
+    $('#btn_Save').click(function () {
+
+        var newdatas = [];
+        var Additems;
+        var Changeitems;
+        var Deleteditems;
+        Additems = JSON.stringify(sheet.getInsertRows().map(function (row) { return row.item; }));
+        Changeitems = JSON.stringify(sheet.getDirtyRows().map(function (row) { return row.item; }));
+        Deleteditems = JSON.stringify(sheet.getDeletedRows().map(function (row) { return row.item; }));
+        $.post("/Forward/CreateStillageSave", { 'AddData': Additems, 'ChangeData': Changeitems, 'DeletedData': Deleteditems },
+            function (result) {
+                if (result.Msg == 'success') {
+                    sheet.autoGenerateColumns = false;
+                    sheet.bindColumns(colInfos);
+                    sheet.setDataSource(result.Data);
+                    Filter(sheet);
+                    alert('保存成功!');
+                } else {
+                    alert('保存失败!');
+                }
+            });
+    });
+    //计算
+    $('#btn_Count').click(function () {
+        var space = false;
+        for (var i = 1; i < sheet.getRowCount() ; i++) {
+            if ($.trim(sheet.getValue(i, 0)) == '' || sheet.getValue(i, 0) == null) {
+                space = true;
+                break;
+            }
+        }
+        if (space) {
+            alert('请删除多余行。');
+            return;
+        }
+        var data1 = [];
+        var data2 = [];
+        for (var i = 0 ; i < sheet.getRowCount(); i++) {
+            data1.push(sheet.getValue(i, 0));
+        }
+        for (var i = 0 ; i < sheet.getRowCount(); i++) {
+            data2.push(sheet.getValue(i, 7));
+        }
+        $.post("/Forward/FillData", { 'data1': JSON.stringify(data1), 'data2': JSON.stringify(data2), 'ProID': Pro_ID },
+            function (result) {
+                if (result.Msg == "success") {
+                    var rowcount = sheet.getRowCount();
+                    var Datalenght = result.Data.length;
+                    if (rowcount != Datalenght) {
+                        alert('数据(BT,TA)重复或填写错误!');
+                        return;
+                    }
+                    for (var i = 0 ; i < rowcount ; i++) {
+                        var BT = sheet.getValue(i, 0);
+                        var Qty = sheet.getValue(i, 4);
+                        var TA = sheet.getValue(i, 7);
+                        for (var j = 0 ; j < result.Data.length; j++)
+                        {
+                            if (BT == result.Data[j].BT_Code && TA == result.Data[j].TA_CODE)
+                            {
+                                sheet.setValue(i, 1, result.Data[j].Description_EN);
+                                sheet.setValue(i, 2, result.Data[j].Description_CN);
+                                sheet.setValue(i, 3, result.Data[j].Units);
+                                sheet.setValue(i, 5, result.Data[j].Qty);
+                                //sheet.setValue(i, 6, result.Data[j].Qty - Qty);
+                                sheet.setValue(i, 9, result.Data[j].BTID);
+                                //sheet.setFormula(i, 6, '=F' + (i + 1) + '-E' + (i + 1));
+                                sheet.setValue(i, 6, result.Data[j].Qty-result.Data[j].Sum_Amount);
+                            }
+                        }
+                    }
+                } else {
+                    alert('计算失败!');
+                }
+            });
+    });
+    //创建
+    $('#btn_Create').click(function () {
+        var Header = {};
+        Header.DeliveryNote = $("#DeliveryNote").val();
+        Header.Goods_PreparedBy = $("#Goods_PreparedBy").val();
+        Header.Goods_PreparedFor = $("#Goods_PreparedFor").val();
+        Header.Planned_Packing_Date = $("#planedate").val();
+        Header.Actual_Packing_Date = $("#actualdate").val();
+        Header.Stillage_Status = '空箱';
+        Header.Stillage_Type = $("#Stillage_Type").find("option:selected").val();
+        Header.Weight = $("#Weight").val();
+        Header.Width = $("#Width").val();
+        Header.Length = $("#Length").val();
+        Header.Height = $("#Height").val();
+        Header.Comments = $("#Comments").val();
+        Header.Shipping = '未装箱';
+        Header.Pro_ID = Pro_ID;
+        if (Header.Weight == "" || Header.Width == "" || Header.Length == "" || Header.Height == "") {
+            alert("需要填写长,宽,高,重量！");
+        } else {
+            $.post("/Forward/CrStillage", { "StillageH": JSON.stringify(Header) },
+                function (result) {
+                    if (result.Msg == 'success') {
+                        alert("创建成功！");
+                        Spread_listInit(result.Data);
+                    } else if (result.Msg == 'fail') {
+                        alert("创建失败！");
+                    }
+                });
+        }
+    });
+
+    $('#btn_confirm').click(function () {
+        if (StillageID != null) {
+            $.post("/Forward/ConfrimStill", { "ID": StillageID },
+                function (result) {
+                    if (result.Msg == 'success')
+                    {
+                        $.post('/Forward/GetStill', { 'PJ_ID_': Pro_ID }, function (result) {
+                            if (result.Msg == "success") {
+                                Spread_listInit(result.Data);
+                                alert('包装箱确认完成。');
+                            }
+                        });
+                    }
+                });
+        } else {
+            alert("请选择包装箱。");
+        }
+    });
+
+    function Filter(sheet) {
+        //获取行数
+        var rcount = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        var ccount = sheet.getColumnCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, rcount, ccount));
+        sheet.rowFilter(filter);
+    }
+
+</script>
+

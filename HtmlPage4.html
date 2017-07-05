@@ -1,0 +1,426 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="spreadjs culture" content="zh-cn" />
+    <title>提料管理系统 | 开发版</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="Content/font-awesome/font-awesome.css" rel="stylesheet"/>
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">-->
+    <!-- Ionicons -->
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">-->
+    <!-- Theme style -->
+    <link href="Content/AdminLTE.min.css" rel="stylesheet" />
+    <!-- Skin -->
+    <link href="Content/Skin/skin-blue.css" rel="stylesheet" />
+    <!-- SpreadCSS -->
+    <link href="Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css" rel="stylesheet" />
+
+    <link href="Content/Tree/default.css" rel="stylesheet" />
+    <style>
+        .example-1 {
+            height: 650px;
+            /*border: 1px solid #ddd;*/
+            /*border-radius: 14px;*/
+        }
+        
+        #one, #two, #three {
+            padding: 5px;
+        }
+
+        #one p {
+            padding: 0;
+        }
+
+
+        .split p {
+            padding: 20px;
+        }
+
+        .split {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .gutter {
+            background-color: #eee;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            cursor: move;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
+        }
+
+            .gutter:active {
+                cursor: -moz-grabbing;
+                cursor: -webkit-grabbing;
+            }
+
+            .gutter.gutter-horizontal {
+                background-image: url('Content/img/vertical.png');
+            }
+
+            .gutter.gutter-vertical {
+                background-image: url('Content/img/horizontal.png');
+            }
+
+            .split.split-horizontal, .gutter.gutter-horizontal {
+                height: 100%;
+                float: left;
+            }
+    </style>
+
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+
+        <!-- Main Header -->
+        <header class="main-header">
+
+            <!-- Logo -->
+            <a href="index2.html" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini">CNYD</span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg">CNYD</span><!--<img src="Content/img/Logo.png">-->
+            </a>
+
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <!-- Navbar Right Menu -->
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <!-- User Account Menu -->
+                        <li class="dropdown user user-menu">
+                            <!-- Menu Toggle Button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <!-- The user image in the navbar-->
+                                <img src="Content/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                <span class="hidden-xs">LG0452</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- The user image in the menu -->
+                                <li class="user-header">
+                                    <img src="Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                                    <p>
+                                        Alexander Pierce - Web Developer
+                                        <small>Member since Nov. 2012</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Body -->
+                                <li class="user-body">
+                                    <div class="row">
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Followers</a>
+                                        </div>
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Sales</a>
+                                        </div>
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Friends</a>
+                                        </div>
+                                    </div>
+                                    <!-- /.row -->
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="pull-left info">
+                        <p>LG0452</p>
+                        <!-- Status -->
+                        <a href="#"><i class="fa fa-circle text-success"></i> Login </a>
+                    </div>
+                </div>
+
+                <!-- search form (Optional) -->
+                <form action="#" method="get" class="sidebar-form">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                <!-- /.search form -->
+                <!-- Sidebar Menu -->
+                <ul class="sidebar-menu">
+                    <li class="header">菜单</li>
+                    <li><a href="#"><i class="fa-adjust fa-link"></i> <span>工程及结构任务</span></a></li>
+                    <li><a href="Master.html"><i class="fa fa-dashboard"></i> <span>材料申请(设计)</span></a></li>
+                    <li class="treeview">
+                        <a href="#"><i class="fa fa-files-o"></i> <span>材料物流</span></a>
+                        <ul class="treeview-menu">
+                            <li><a href="HtmlPage2.html"><i class="fa fa-circle-o"></i> Create New CNYD Stillage</a></li>
+                            <li><a href="HtmlPage1.html"><i class="fa fa-circle-o"></i> Edit New CNYD Stillage</a></li>
+                            <li><a href="HtmlPage3.html"><i class="fa fa-circle-o"></i> Shipment Heade Information</a></li>
+                            <li><a href="HtmlPage4.html"><i class="fa fa-circle-o"></i> Shipment Stillages</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#"><i class="fa fa-th"></i> <span>材料采购及付款申请</span></a></li>
+                    <li><a href="#"><i class="fa fa-pie-chart"></i> <span>Material Procurement</span></a></li>
+                    <li><a href="#"><i class="fa fa-laptop"></i> <span>Site Logistics</span></a></li>
+                    <li><a href="#"><i class="fa fa-edit"></i> <span>现场管理</span></a></li>
+                    <li><a href="#"><i class="fa fa-table"></i> <span>工程管理(销售)</span></a></li>
+                    <li><a href="#"><i class="fa fa-calendar"></i> <span>Project Mangement</span></a></li>
+                    <li class="active"><a href="#"><i class="fa fa-envelope"></i> <span>其他</span></a></li>
+                </ul>
+                <!-- /.sidebar-menu -->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <!-- Main content -->
+            <section class="content">
+
+                <!-- Your Page Content Here -->
+                <!-- 主内容 -->
+                <div class="row" id="main">
+                    <div class="col-md-3">
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <h5>集装箱-状态</h5>
+                            </div>
+
+                            <div class="box-body box-profile">
+                                <div id='Spread_List' style='width: 100%; height: 600px;'></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-9">
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <div class="col-md-3">
+                                    <h5>Shippment Refernce:</h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-control" width="200" placeholder="Shippment Refernce:" type="text">
+                                </div>
+                                <div class="col-md-5">
+                                </div>
+                            </div>
+                            <div class="box-body box-profile">
+                                <div class="row example-1">
+                                    <div id="one" class="split split-horizontal">
+                                        Stages in selected Shipment<br />
+                                        <div id='MianSpread' style='width: 100%; height: 550px;'></div>
+                                    </div>
+                                    <div id="two" class="split split-horizontal">
+                                        Stiiiages available for Shipping<br />
+                                        <div id='MianSpread2' style='width: 100%; height: 550px;'></div>
+                                    </div>
+                                    <div id="three" class="split split-horizontal">
+                                        Components on selected Stitfage<br />
+                                        <div id='MianSpread3' style='width: 100%; height: 550px;'></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="pull-right hidden-xs">
+                Anything you want
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+        </footer>
+
+        <!-- Control Sidebar -->
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+    <!-- ./wrapper -->
+    <!-- REQUIRED JS SCRIPTS -->
+    <!-- jQuery 2.2.0 -->
+
+    <script src="Scripts/jQuery-2.2.0.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="Scripts/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="Scripts/dist/app.min.js"></script>
+    <!-- Spreadjs -->
+    <script src="Scripts/SpreadJS/gcspread.sheets.all.9.40.20161.0.min.js"></script>
+    <script src="Scripts/SpreadJS/gcspread.sheets.print.9.40.20161.0.min.js"></script>
+    <script src="Scripts/SpreadJS/gcspread.sheets.resources.zh.9.40.20161.0.min.js"></script>
+    <script src="Scripts/TreeView/bootstrap-treeview.js"></script>
+    <!--滑块插件-->
+    <script src="Scripts/split/split.min.js"></script>
+    <!--jq 增强div resize-->
+    <script src="Scripts/resize.js"></script>
+    <script type="text/javascript">
+        var spread;
+        var spread_list;
+        var spread2;
+        var spread3;
+        Split(['#one', '#two', '#three'], {
+            sizes: [34, 33, 33], minSize: 0
+        });
+        function spread_size()
+        {
+            spread.refresh();
+            spread_list.refresh();
+            spread2.refresh();
+            spread3.refresh();
+        }
+		$(
+            function () {
+                var spreadNS = GcSpread.Sheets;
+                spread = new GcSpread.Sheets.Spread($('#MianSpread')[0], { sheetCount: 1 });
+
+                var sheet = spread.getSheet(0);
+                sheet.setColumnCount(2, GcSpread.Sheets.SheetArea.viewport);
+                //列宽
+                sheet.setColumnWidth(0, 100);
+                sheet.setColumnWidth(1, 100);
+                //列头文本
+                sheet.setValue(0, 0, "Stillage:", GcSpread.Sheets.SheetArea.colHeader);
+                sheet.setValue(0, 1, "Stillage Type:", GcSpread.Sheets.SheetArea.colHeader);
+
+                //获取行数
+                var count = sheet.getRowCount(GcSpread.Sheets.SheetArea.viewport);
+                //设置筛选
+                var filter = new spreadNS.HideRowFilter(new spreadNS.Range(0, 0, count, 2));
+                sheet.rowFilter(filter);
+
+                spread_list = new GcSpread.Sheets.Spread($('#Spread_List')[0], { sheetCount: 1 });
+                spread_list.getSheet(0).setColumnCount(3, GcSpread.Sheets.SheetArea.viewport);
+                spread_list.getSheet(0).setRowCount(100, GcSpread.Sheets.SheetArea.viewport);
+
+                spread_list.getSheet(0).setColumnWidth(0, 50);
+                spread_list.getSheet(0).setColumnWidth(1, 90);
+                spread_list.getSheet(0).setColumnWidth(2, 50);
+                var count = spread_list.getSheet(0).getRowCount(GcSpread.Sheets.SheetArea.viewport);
+                    //设置筛选
+                var filter = new spreadNS.HideRowFilter(new spreadNS.Range(0, 0, count, 3));
+                spread_list.getSheet(0).rowFilter(filter);
+                spread_list.getSheet(0).setValue(0, 0, "DL23");
+                spread_list.getSheet(0).setValue(1, 0, "DL23");
+                spread_list.getSheet(0).setValue(2, 0, "DL23");
+                spread_list.getSheet(0).setValue(3, 0, "DL23");
+                spread_list.getSheet(0).setValue(4, 0, "DL23");
+                spread_list.getSheet(0).setValue(5, 0, "DL23");
+                spread_list.getSheet(0).setValue(0, 1, "DF334545456");
+                spread_list.getSheet(0).setValue(1, 1, "sws23466565");
+                spread_list.getSheet(0).setValue(2, 1, "sgj45544685");
+                spread_list.getSheet(0).setValue(3, 1, "ddf24335467");
+                spread_list.getSheet(0).setValue(4, 1, "sas43543553");
+                spread_list.getSheet(0).setValue(5, 1, "hjj34354334");
+                spread_list.getSheet(0).setValue(0, 2, "Unload");
+                spread_list.getSheet(0).setValue(1, 2, "Unload");
+                spread_list.getSheet(0).setValue(2, 2, "Pack Plant");
+                spread_list.getSheet(0).setValue(3, 2, "Nothing");
+                spread_list.getSheet(0).setValue(4, 2, "Pack Plant");
+                spread_list.getSheet(0).setValue(5, 2, "Pack Plant");
+
+                spread2 = new GcSpread.Sheets.Spread($('#MianSpread2')[0], { sheetCount: 1 });
+                var sheet2 = spread2.getSheet(0);
+                sheet2.setColumnCount(2, GcSpread.Sheets.SheetArea.viewport);
+                //列头文本
+                sheet2.setValue(0, 0, "Stillage:", GcSpread.Sheets.SheetArea.colHeader);
+                sheet2.setValue(0, 1, "Stillage Type:", GcSpread.Sheets.SheetArea.colHeader);
+                //列宽
+                sheet2.setColumnWidth(0, 100);
+                sheet2.setColumnWidth(1, 100);
+
+                spread3 = new GcSpread.Sheets.Spread($('#MianSpread3')[0], { sheetCount: 1 });
+                var sheet3 = spread3.getSheet(0);
+                sheet3.setColumnCount(2, GcSpread.Sheets.SheetArea.viewport);
+                //列头文本
+                sheet3.setValue(0, 0, "Stillage:", GcSpread.Sheets.SheetArea.colHeader);
+                sheet3.setValue(0, 1, "Stillage Type:", GcSpread.Sheets.SheetArea.colHeader);
+                //列宽
+                sheet3.setColumnWidth(0, 100);
+                sheet3.setColumnWidth(1, 100);
+
+                $('#main').resize(function () {
+                    spread_size();
+                });
+                $('#one').resize(function () {
+                    spread.refresh();
+                    spread2.refresh();
+                });
+                $('#two').resize(function () {
+                    spread.refresh();
+                    spread2.refresh();
+                    spread3.refresh();
+                });
+                $('#three').resize(function () {
+                    spread2.refresh();
+                    spread3.refresh();
+                });
+            }
+         );
+    </script>
+</body>
+</html>
+
+

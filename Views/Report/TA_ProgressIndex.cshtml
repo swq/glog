@@ -1,0 +1,463 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div style="display:none">
+    <img id="image1" src="~/Images/folder.png" alt="" width="15" height="15" />
+    <img id="image2" src="~/Images/002.png" alt="" width="15" height="15" />
+</div>
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div style="margin-left:3px; margin-top:5px;">
+                    <div id='MianSpread' style='width: 100%; height: 700px;'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<!--ztree-->
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.exedit.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var sheet;
+    $(function () {
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        excelIo = new GC.Spread.Excel.IO();
+        sheet = spread.getActiveSheet();
+        var ns = GC.Spread.Sheets;
+
+        function TreeNodeCellType() {
+
+        }
+        TreeNodeCellType.prototype = new ns.CellTypes.Text();
+
+        TreeNodeCellType.prototype.paint = function (ctx, value, x, y, w, h, style, options) {
+            var level = options.sheet.rowOutlines.getLevel(options.row);
+            var nlevel = -1;
+            if (options.row < options.sheet.getRowCount() - 1) {
+                nlevel = options.sheet.rowOutlines.getLevel(options.row + 1);
+            }
+            var hoffset = (level + 2) * 12;
+            x += hoffset;
+            w -= hoffset;
+
+            var image;
+            if (nlevel > level) {
+                image = document.getElementById('image1');
+            }
+            else {
+                image = document.getElementById('image2');
+            }
+
+            var imageWidth = image.width, imageMagin = 3, imageLayoutWidth = imageWidth + imageMagin * 2;
+            x += imageLayoutWidth;
+            w -= imageLayoutWidth;
+            GC.Spread.Sheets.CellTypes.Base.prototype.paint.apply(this, arguments);
+
+            if (options.row == options.sheet.getRowCount() - 1) return; //last row
+
+            if (nlevel > level) {
+                var collapsed = options.sheet.rowOutlines.isCollapsed(options.row + 1);
+                x -= imageLayoutWidth;
+                w += imageLayoutWidth;
+                var imageX = x + imageMagin, imageY = y + h / 2 - image.height / 2;
+                x--;
+                y += h / 2 - 3;
+                ctx.save();
+                ctx.fillStyle = "black";
+                ctx.beginPath();
+                if (collapsed) {
+                    ctx.moveTo(x - 5, y);
+                    ctx.lineTo(x, y + 3);
+                    ctx.lineTo(x - 5, y + 6);
+                } else {
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x, y + 5);
+                    ctx.lineTo(x - 5, y + 5);
+                }
+                ctx.fill();
+                ctx.restore();
+                ctx.drawImage(image, imageX, imageY);
+            }
+            else {
+                x -= imageLayoutWidth;
+                w += imageLayoutWidth;
+                var imageX = x + imageMagin, imageY = y + h / 2 - image.height / 2;
+                x--;
+                y += h / 2 - 3;
+                ctx.save();
+                ctx.drawImage(image, imageX, imageY);
+                ctx.restore();
+            }
+        };
+        // override getHitInfo to allow cell type get mouse messages
+        TreeNodeCellType.prototype.getHitInfo = function (x, y, cellStyle, cellRect, context) {
+            return {
+                x: x,
+                y: y,
+                row: context.row,
+                col: context.col,
+                cellStyle: cellStyle,
+                cellRect: cellRect,
+                sheetArea: context.sheetArea
+            };
+        }
+        TreeNodeCellType.prototype.processMouseDown = function (hitinfo) {
+            var level = hitinfo.sheet.rowOutlines.getLevel(hitinfo.row);
+            var hoffset = (level + 2) * 12 + hitinfo.cellRect.x;
+            if (hitinfo.x < hoffset && hitinfo.x > hoffset - 10) {
+                var collapsed = hitinfo.sheet.rowOutlines.isCollapsed(hitinfo.row + 1);
+                hitinfo.sheet.rowOutlines.setCollapsed(hitinfo.row, !collapsed);
+                hitinfo.sheet.invalidateLayout();
+                hitinfo.sheet.repaint();
+            }
+        };
+
+        sheet.suspendPaint();
+        sheet.suspendEvent();
+        sheet.rowOutlines.direction(GC.Spread.Sheets.Outlines.OutlineDirection.backward);
+        sheet.getRange(-1, 0, -1, 1).cellType(new TreeNodeCellType());
+
+        sheet.setValue(0, 0, "Tower01");
+        sheet.setValue(1, 0, "EWS5");
+        sheet.setValue(2, 0, "2F单元");
+        sheet.setValue(3, 0, "3F单元");
+        sheet.setValue(4, 0, "4F单元");
+        sheet.setValue(5, 0, "5F单元");
+        sheet.setValue(6, 0, "6F单元");
+        sheet.setValue(7, 0, "7F单元");
+        sheet.setValue(8, 0, "8F单元");
+        sheet.setValue(9, 0, "9F单元");
+        sheet.setValue(10, 0, "10F单元");
+
+        sheet.setValue(11, 0, "Tower02");
+        sheet.setValue(12, 0, "EWS1");
+        sheet.setValue(13, 0, "2F单元");
+        sheet.setValue(14, 0, "3F单元");
+        sheet.setValue(15, 0, "4F单元");
+        sheet.setValue(16, 0, "5F单元");
+        sheet.setValue(17, 0, "6F单元");
+        sheet.setValue(18, 0, "7F单元");
+
+        sheet.rowOutlines.group(1, 10);
+        sheet.rowOutlines.group(2, 9);
+        sheet.rowOutlines.group(12, 7);
+        sheet.rowOutlines.group(13, 6);
+        sheet.getRange(-1, 0, -1, 1).width(150);
+        sheet.showRowOutline(false);
+
+
+        var h = ns.SheetArea.colHeader;
+        sheet.setColumnCount(12, h);
+        sheet.setColumnCount(12, GC.Spread.Sheets.SheetArea.viewport);
+        sheet.setRowCount(2, h);
+        sheet.addSpan(0, 0, 2, 1, h);
+        sheet.setValue(0, 0, "TA编号", h);
+
+        sheet.addSpan(0, 1, 1, 3, h);
+        sheet.setValue(0, 1, "生产计划", h);
+        sheet.setValue(1, 1, "计划完成时间", h);
+        sheet.setValue(1, 2, "实际完成时间", h);
+        sheet.setValue(1, 3, "提前或延时", h);
+
+        sheet.addSpan(0, 4, 1, 4, h);
+        sheet.setValue(0, 4, "发运计划", h);
+        sheet.setValue(1, 4, "计划完成时间", h);
+        sheet.setValue(1, 5, "实际完成时间", h);
+        sheet.setValue(1, 6, "提前或延时", h);
+        sheet.setValue(1, 7, "因前序造成的提前或延时", h);
+        sheet.getCell(1, 7).wordWrap(true);
+        sheet.addSpan(0, 8, 1, 4, h);
+        sheet.setValue(0, 8, "安装计划", h);
+        sheet.setValue(1, 8, "计划完成时间", h);
+        sheet.setValue(1, 9, "实际完成时间", h);
+        sheet.setValue(1, 10, "提前或延时", h);
+        sheet.setValue(1, 11, "因前序造成的提前或延时", h);
+        sheet.getCell(1, 11).wordWrap(true);
+        SetData(sheet);
+
+        sheet.getRange(-1, 1, -1, 12).width(100);
+        //sheet.getRange(-1, 5, -1, 5).width(150);
+        sheet.setRowCount(20);
+        sheet.getRange(-1, 1, -1, 1).hAlign(ns.HorizontalAlign.left);
+        sheet.resumeEvent();
+        sheet.resumePaint(false);
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+        $("#Choise_PJ").on("select2:select", function (e) {
+            var PJ_ID_ = $("#Choise_PJ").val();
+
+        });
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+    });
+
+    function SetData(sheet) {
+        sheet.setValue(2, 1, "2017-3-12");
+        sheet.setValue(3, 1, "2017-3-18");
+        sheet.setValue(4, 1, "2017-3-24");
+        sheet.setValue(5, 1, "2017-4-2");
+        sheet.setValue(6, 1, "2017-4-9");
+        sheet.setValue(7, 1, "2017-4-16");
+        sheet.setValue(8, 1, "2017-4-23");
+        sheet.setValue(9, 1, "2017-4-25");
+        sheet.setValue(10, 1, "2017-4-30");
+
+        sheet.setValue(2, 2, "2017-3-12");
+        sheet.setValue(3, 2, "2017-3-13");
+        sheet.setValue(4, 2, "2017-3-22");
+        sheet.setValue(5, 2, "2017-3-30");
+        sheet.setValue(6, 2, "2017-4-16");
+        sheet.setValue(7, 2, "2017-4-16");
+        sheet.setValue(8, 2, "2017-4-20");
+        sheet.setValue(9, 2, "2017-4-20");
+        sheet.setValue(10, 2, "2017-4-20");
+
+        sheet.setValue(2, 4, "2017-3-19");
+        sheet.setValue(3, 4, "2017-3-26");
+        sheet.setValue(4, 4, "2017-4-2");
+        sheet.setValue(5, 4, "2017-4-9");
+        sheet.setValue(6, 4, "2017-4-16");
+        sheet.setValue(7, 4, "2017-4-23");
+        sheet.setValue(8, 4, "2017-4-30");
+        sheet.setValue(9, 4, "2017-5-7");
+        sheet.setValue(10, 4, "2017-5-14");
+
+        sheet.setValue(2, 5, "2017-3-19");
+        sheet.setValue(3, 5, "2017-3-19");
+        sheet.setValue(4, 5, "2017-3-30");
+        sheet.setValue(5, 5, "2017-4-7");
+        sheet.setValue(6, 5, "2017-4-16");
+        sheet.setValue(7, 5, "2017-4-16");
+        sheet.setValue(8, 5, "2017-4-27");
+        sheet.setValue(9, 5, "2017-4-27");
+        sheet.setValue(10, 5, "2017-4-27");
+
+        sheet.setValue(2, 8, "2017-5-4");
+        sheet.setValue(3, 8, "2017-5-11");
+        sheet.setValue(4, 8, "2017-5-18");
+        sheet.setValue(5, 8, "2017-5-25");
+        sheet.setValue(6, 8, "2017-6-1");
+        sheet.setValue(7, 8, "2017-6-8");
+        sheet.setValue(8, 8, "2017-6-15");
+        sheet.setValue(9, 8, "2017-6-22");
+        sheet.setValue(10, 8, "2017-6-29");
+
+        sheet.setValue(2, 9, "2017-5-4");
+        sheet.setValue(3, 9, "2017-5-7");
+        sheet.setValue(4, 9, "2017-5-13");
+        sheet.setValue(5, 9, "2017-5-21");
+        sheet.setValue(6, 9, "2017-5-30");
+        sheet.setValue(7, 9, "2017-6-12");
+        sheet.setValue(8, 9, "2017-6-20");
+        sheet.setValue(9, 9, "2017-6-27");
+        sheet.setValue(10, 9, "2017-7-9");
+
+        sheet.setValue(13, 9, "2017-6-12");
+        sheet.setValue(14, 9, "2017-6-12");
+        sheet.setValue(15, 9, "2017-6-27");
+        sheet.setValue(16, 9, "2017-6-27");
+        sheet.setValue(17, 9, "2017-7-10");
+        sheet.setValue(18, 9, "2017-7-10");
+        sheet.setValue(13, 8, "2017-6-9");
+        sheet.setValue(14, 8, "2017-6-16");
+        sheet.setValue(15, 8, "2017-6-23");
+        sheet.setValue(16, 8, "2017-6-30");
+        sheet.setValue(17, 8, "2017-7-7");
+        sheet.setValue(18, 8, "2017-7-14");
+        sheet.setValue(13, 5, "2017-4-27");
+        sheet.setValue(14, 5, "2017-5-4");
+        sheet.setValue(15, 5, "2017-5-18");
+        sheet.setValue(16, 5, "2017-5-18");
+        sheet.setValue(17, 5, "2017-6-1");
+        sheet.setValue(18, 5, "2017-6-1");
+        sheet.setValue(13, 4, "2017-4-24");
+        sheet.setValue(14, 4, "2017-5-1");
+        sheet.setValue(15, 4, "2017-5-8");
+        sheet.setValue(16, 4, "2017-5-15");
+        sheet.setValue(17, 4, "2017-5-22");
+        sheet.setValue(18, 4, "2017-5-29");
+        sheet.setValue(13, 2, "2017-4-20");
+        sheet.setValue(14, 2, "2017-4-29");
+        sheet.setValue(15, 2, "2017-5-3");
+        sheet.setValue(16, 2, "2017-5-8");
+        sheet.setValue(17, 2, "2017-5-15");
+        sheet.setValue(18, 2, "2017-5-22");
+        sheet.setValue(13, 1, "2017-4-17");
+        sheet.setValue(14, 1, "2017-4-24");
+        sheet.setValue(15, 1, "2017-5-1");
+        sheet.setValue(16, 1, "2017-5-8");
+        sheet.setValue(17, 1, "2017-5-15");
+        sheet.setValue(18, 1, "2017-5-22");
+
+
+
+        sheet.setValue(2, 3, 0, 3);
+        sheet.setValue(3, 3, 5, 3);
+        sheet.setValue(4, 3, 2, 3);
+        sheet.setValue(5, 3, 2, 3);
+        sheet.setValue(6, 3, -7, 3);
+        sheet.setValue(7, 3, 0, 3);
+        sheet.setValue(8, 3, 3, 3);
+        sheet.setValue(9, 3, 5, 3);
+        sheet.setValue(10, 3, 10, 3);
+        sheet.setValue(13, 3, -3);
+        sheet.setValue(14, 3, -5);
+        sheet.setValue(15, 3, -2);
+        sheet.setValue(16, 3, 0);
+        sheet.setValue(17, 3, 0);
+        sheet.setValue(18, 3, 0);
+        var dataBarRule = new GC.Spread.Sheets.ConditionalFormatting.DataBarRule
+            (GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            -20,
+            GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            20,
+            "green",
+            [new GC.Spread.Sheets.Range(2, 3, 18, 4)]);
+        dataBarRule.color("green");
+        dataBarRule.showBorder(true);
+        dataBarRule.borderColor("orange");
+        dataBarRule.dataBarDirection(GC.Spread.Sheets.ConditionalFormatting.BarDirection.leftToRight);
+        dataBarRule.negativeFillColor("red");
+        dataBarRule.useNegativeFillColor(true);
+        dataBarRule.negativeBorderColor("yellow");
+        dataBarRule.useNegativeBorderColor(true);
+        dataBarRule.axisPosition(GC.Spread.Sheets.ConditionalFormatting.DataBarAxisPosition.automatic);
+        dataBarRule.axisColor("blue");
+        dataBarRule.showBarOnly(false);
+        sheet.conditionalFormats.addRule(dataBarRule);
+        //=======================================================
+        sheet.setValue(2, 6, 0);
+        sheet.setValue(3, 6, 7);
+        sheet.setValue(4, 6, 2);
+        sheet.setValue(5, 6, 2);
+        sheet.setValue(6, 6, 0);
+        sheet.setValue(7, 6, 7);
+        sheet.setValue(8, 6, 3);
+        sheet.setValue(9, 6, 10);
+        sheet.setValue(10, 6, 17);
+        sheet.setValue(13, 6, -3);
+        sheet.setValue(14, 6, -3);
+        sheet.setValue(15, 6, -10);
+        sheet.setValue(16, 6, -3);
+        sheet.setValue(17, 6, -10);
+        sheet.setValue(18, 6, -3);
+        sheet.setValue(2, 7, 0);
+        sheet.setValue(3, 7, 5);
+        sheet.setValue(4, 7, 2);
+        sheet.setValue(5, 7, 2);
+        sheet.setValue(6, 7, -7);
+        sheet.setValue(7, 7, 0);
+        sheet.setValue(8, 7, 3);
+        sheet.setValue(9, 7, 5);
+        sheet.setValue(10, 7, 10);
+        sheet.setValue(13, 7, -3);
+        sheet.setValue(14, 7, -5);
+        sheet.setValue(15, 7, -2);
+        sheet.setValue(16, 7, 0);
+        sheet.setValue(17, 7, 0);
+        sheet.setValue(18, 7, 0);
+        var dataBarRule = new GC.Spread.Sheets.ConditionalFormatting.DataBarRule
+            (GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            -20,
+            GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            20,
+            "green",
+            [new GC.Spread.Sheets.Range(2, 6, 18, 8)]);
+        dataBarRule.color("green");
+        dataBarRule.showBorder(true);
+        dataBarRule.borderColor("orange");
+        dataBarRule.dataBarDirection(GC.Spread.Sheets.ConditionalFormatting.BarDirection.leftToRight);
+        dataBarRule.negativeFillColor("red");
+        dataBarRule.useNegativeFillColor(true);
+        dataBarRule.negativeBorderColor("yellow");
+        dataBarRule.useNegativeBorderColor(true);
+        dataBarRule.axisPosition(GC.Spread.Sheets.ConditionalFormatting.DataBarAxisPosition.automatic);
+        dataBarRule.axisColor("blue");
+        dataBarRule.showBarOnly(false);
+        sheet.conditionalFormats.addRule(dataBarRule);
+        //=======================================================
+        sheet.setValue(2, 10, 0);
+        sheet.setValue(3, 10, 4);
+        sheet.setValue(4, 10, 5);
+        sheet.setValue(5, 10, 4);
+        sheet.setValue(6, 10, 2);
+        sheet.setValue(7, 10, -4);
+        sheet.setValue(8, 10, -5);
+        sheet.setValue(9, 10, -5);
+        sheet.setValue(10, 10, -10);
+        sheet.setValue(13, 10, -3);
+        sheet.setValue(14, 10, 4);
+        sheet.setValue(15, 10, -4);
+        sheet.setValue(16, 10, 3);
+        sheet.setValue(17, 10, -3);
+        sheet.setValue(18, 10, 4);
+        sheet.setValue(2, 11, 0);
+        sheet.setValue(3, 11, 7);
+        sheet.setValue(4, 11, 2);
+        sheet.setValue(5, 11, 2);
+        sheet.setValue(6, 11, 0);
+        sheet.setValue(7, 11, 7);
+        sheet.setValue(8, 11, 3);
+        sheet.setValue(9, 11, 10);
+        sheet.setValue(10, 11, 17);
+        sheet.setValue(13, 11, -3);
+        sheet.setValue(14, 11, -5);
+        sheet.setValue(15, 11, -2);
+        sheet.setValue(16, 11, 0);
+        sheet.setValue(17, 11, 0);
+        sheet.setValue(18, 11, 0);
+        var dataBarRule = dataBarRule;
+        var dataBarRule = new GC.Spread.Sheets.ConditionalFormatting.DataBarRule
+            (GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            -20,
+            GC.Spread.Sheets.ConditionalFormatting.ScaleValueType.number,
+            20,
+            "green",
+            [new GC.Spread.Sheets.Range(2, 10, 18, 12)]);
+
+        sheet.conditionalFormats.addRule(dataBarRule);
+    }
+
+</script>

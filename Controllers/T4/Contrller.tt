@@ -1,0 +1,138 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+
+<#@ output extension=".cs" #>
+
+using gLog_FrontEnd.Filters;
+using gLog_FrontEnd.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace gLog_FrontEnd.Controllers
+{
+	<#string str="TC_Country"; 
+		//Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+		//Module[] modules = assembly.GetModules();
+	    //foreach (Module module in modules)  
+		//{  
+			//if(module.Name == str)
+			//{
+				//
+			//}
+		//} 
+	#>
+
+
+
+    public class <#=str #>Controller : Controller
+    {
+        private gLog_FrontEndContext db = new gLog_FrontEndContext();
+        // GET: DataDictionary
+
+        #region ProState-工程状态
+        [AdminLayout]
+        public ActionResult ProStateIndex()
+        {
+            return View();
+        }
+        //获取用户数据
+        public JsonResult GetProState(int limit, int offset, string departmentname, string statu)
+        {
+            var ProState = db.TC_ProjectState.Where(s => s.IsDeleted == false).Select(s =>
+                new { 
+				<# 
+
+					Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+					Module[] modules = assembly.GetModules();
+					foreach (Module module in modules)  
+					{
+					//Type type = assembly.GetType("gLog_FrontEnd.Models.TC_Country", true, true);
+					//PropertyInfo[] Propertys = type.GetProperties();  
+					//for (int i = 0; i < Propertys.Length; i++)  
+					//{  
+				#>
+						s.<#=modules.Length#>
+				<#
+					   // Propertys[i].SetValue(Propertys[i], i, null); //设置值  
+					   // Propertys[i].GetValue(Propertys[i],null); //获取值  
+						//Console.WriteLine("属性名：{0},类型：{1}",Propertys[i].Name,Propertys[i].PropertyType);  
+					}
+				#>
+				}).ToList();
+            var total = ProState.Count;
+            var rows = ProState.Skip(offset).Take(limit).ToList();
+            return Json(new { total = total, rows = rows }, JsonRequestBehavior.AllowGet);
+        }
+        //提交创建和修改
+        [HttpPost]
+        public JsonResult ProStateGetEdit(string data)
+        {
+            var User = Session["User"] as T_Auth_User;
+            var ProjectState = JsonConvert.DeserializeObject<TC_ProjectState>(data);
+            if (ProjectState.ID == -1)
+            {
+                ProjectState.IsDeleted = false;
+                ProjectState.CreateDate = DateTime.Now;
+                ProjectState.CreateUserCode = User.LoginName;
+                ProjectState.CreateUserID = User.Id;
+                db.TC_ProjectState.Add(ProjectState);
+            }
+            else
+            {
+                ProjectState.ModifiedDate = DateTime.Now;
+                ProjectState.ModifiedUserCode = User.LoginName;
+                ProjectState.ModifiedUserID = User.Id;
+                DbEntityEntry<TC_ProjectState> dbEntry = db.Entry<TC_ProjectState>(ProjectState);
+                dbEntry.State = EntityState.Unchanged;
+                dbEntry.Property(s => s.Enable).IsModified = true;
+                dbEntry.Property(s => s.PJ_State).IsModified = true;
+                dbEntry.Property(s => s.PJ_State_EN).IsModified = true;
+                dbEntry.Property(s => s.Note).IsModified = true;
+                dbEntry.Property(s => s.SortOrder).IsModified = true;
+                dbEntry.Property(s => s.ModifiedDate).IsModified = true;
+                dbEntry.Property(s => s.ModifiedUserCode).IsModified = true;
+                dbEntry.Property(s => s.ModifiedUserID).IsModified = true;
+            }
+            var status = "success";
+            if (db.SaveChanges() <= 0)
+            {
+                status = "fail";
+            }
+            return Json(new { status = status }, JsonRequestBehavior.AllowGet);
+        }
+        //提交删除
+        [HttpPost]
+        public JsonResult ProStateDel(string data)
+        {
+
+            var ProjectState = JsonConvert.DeserializeObject<List<TC_ProjectState>>(data);
+            foreach (var temp in ProjectState)
+            {
+                temp.IsDeleted = true;
+                db.Entry(temp).State = EntityState.Unchanged;
+                db.Entry(temp).Property(s => s.IsDeleted).IsModified = true;
+            }
+            var status = "success";
+            if (db.SaveChanges() <= 0)
+            {
+                status = "fail";
+            }
+            return Json(new { status = status }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+    }
+
+}

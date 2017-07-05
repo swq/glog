@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">工程进度：</h4>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div id="main" style="width:100%;height:650px;margin:0 auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<script src="~/Scripts/ECharts/echarts.js"></script>
+<script src="~/Scripts/ECharts/vintage.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+        var myChart = echarts.init(document.getElementById('main'), 'vintage');
+
+        // 指定图表的配置项和数据
+        //app.title = '多 X 轴示例';
+
+        var colors = ['#5793f3', '#d14a61', '#675bba'];
+
+
+        var option = {
+            color: colors,
+
+            tooltip: {
+                trigger: 'none',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            legend: {
+                data: ['莱登办公楼', '法尔', '100大楼', '海港中心']
+            },
+            grid: {
+                top: 70,
+                bottom: 50
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    axisLine: {
+                        onZero: false,
+                        lineStyle: {
+                            color: colors[1]
+                        }
+                    },
+                    axisPointer: {
+                        label: {
+                            formatter: function (params) {
+                                return '发运量  ' + params.value + '：' + params.seriesData[0].data;
+                            }
+                        }
+                    },
+                    data: ["3-3", "3-10", "3-17", "3-24", "3-31", "4-7", "4-14", "4-21", "4-28"]
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: '莱登办公楼',
+                    type: 'line',
+
+                    smooth: true,
+                    data: [150, 182, 170, 164, 192, 130, 175, 182, 148]
+                },
+                {
+                    name: '法尔',
+                    type: 'line',
+                    smooth: true,
+                    data: [170, 190, 185, 164, 170, 150, 195, 202, 188]
+                }
+                ,
+                {
+                    name: '100大楼',
+                    type: 'line',
+                    smooth: true,
+                    data: [90, 105, 110, 102, 120, 115, 95, 82, 108]
+                }
+                ,
+                {
+                    name: '海港中心',
+                    type: 'line',
+                    smooth: true,
+                    data: [270, 262, 240, 284, 220, 230, 275, 260, 248]
+                }
+
+            ]
+        };
+
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    });
+
+</script>

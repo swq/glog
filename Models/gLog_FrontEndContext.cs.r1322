@@ -1,0 +1,61 @@
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+//using gLog_FrontEnd.Models.Mapping;
+using System.Reflection;
+using System.Linq;
+using System;
+using System.Data.Entity.ModelConfiguration;
+
+namespace gLog_FrontEnd.Models
+{
+    public partial class gLog_FrontEndContext : DbContext
+    {
+        public gLog_FrontEndContext()
+            : base("Name=gLog_FrontEndContext")
+        {
+        }
+
+        public DbSet<SysConfig_OperateLog> SysConfig_OperateLog { get; set; }
+        public DbSet<sysdiagram> sysdiagrams { get; set; }
+        public DbSet<T_Auth_Module> T_Auth_Module { get; set; }
+        public DbSet<T_Auth_ModulePermission> T_Auth_ModulePermission { get; set; }
+        public DbSet<T_Auth_Permission> T_Auth_Permission { get; set; }
+        public DbSet<T_Auth_Role> T_Auth_Role { get; set; }
+        public DbSet<T_Auth_RoleModulePermission> T_Auth_RoleModulePermission { get; set; }
+        public DbSet<T_Auth_User> T_Auth_User { get; set; }
+        public DbSet<T_Auth_UserRole> T_Auth_UserRole { get; set; }
+        public DbSet<T_CardType> T_CardType { get; set; }
+        public DbSet<T_Company> T_Company { get; set; }
+        public DbSet<T_Country> T_Country { get; set; }
+        public DbSet<T_Part> T_Part { get; set; }
+        public DbSet<T_Progress> T_Progress { get; set; }
+        public DbSet<T_Project> T_Project { get; set; }
+        public DbSet<T_State> T_State { get; set; }
+        public DbSet<T_User> T_User { get; set; }
+        public DbSet<T_ViewInfo> T_ViewInfo { get; set; }
+        public DbSet<T_ViewCelldata> T_ViewCelldata { get; set; }
+        public DbSet<T_BT_INFO> T_BT_INFO { get; set; }
+        public DbSet<CNYD_B_PROJECT> CNYD_B_PROJECT { get; set; }
+        public DbSet<CNYD_SYS_TA_TREE> CNYD_SYS_TA_TREE { get; set; }
+        public DbSet<TC_ProjectState> TC_ProjectState { get; set; }
+        public DbSet<TC_ProjectType> TC_ProjectType { get; set; }
+        public DbSet<TC_GeographyArea> TC_GeographyArea { get; set; }
+        public DbSet<TC_Country> TC_Country { get; set; }
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            var typesToRegister = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(type => !String.IsNullOrEmpty(type.Namespace))
+            .Where(type => type.BaseType != null 
+            && type.BaseType.IsGenericType
+            && type.BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>)
+            );
+            foreach (var type in typesToRegister)
+            {
+                dynamic configurationInstance = Activator.CreateInstance(type);
+                modelBuilder.Configurations.Add(configurationInstance);
+            }
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.HasDefaultSchema("CNYDWBS");
+        }
+    }
+}

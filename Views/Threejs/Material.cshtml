@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">3D演练材质：</h4>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div style="float:left">
+                    <h3>Lambert材质立方体：</h3>
+                    <canvas id="CubeCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>Lambert材质立方自身发光：</h3>
+                    <canvas id="PlaneCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>Phong材质球：</h3>
+                    <canvas id="SphereCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>Normal材质立方体：</h3>
+                    <canvas id="HalfSphereCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>单张图像应用于长方体：</h3>
+                    <canvas id="CircleCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>多张图像应用于长方体：</h3>
+                    <canvas id="SectorCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+                <div style="float:left">
+                    <h3>棋盘：</h3>
+                    <canvas id="CylinderCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/Threejs/three.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+        var renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('CircleCanvas')
+        });
+        renderer.setClearColor(0x000000);
+        var scene = new THREE.Scene();
+        // camera
+        var a = 0.7;
+        var camera = new THREE.OrthographicCamera(-10 * a, 10 * a, 7.5 * a, -7.5 * a, 0.1, 100);
+        camera.position.set(10, 10, 10);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        scene.add(camera);
+        // light '/Images/fpic9752.jpg'
+        var light = new THREE.PointLight(0xffffff, 1, 1000);
+        light.position.set(10, 15, 20);
+        scene.add(light);
+
+        var texture = THREE.ImageUtils.loadTexture('/Images/fpic9752.jpg', {}, function () {
+            renderer.render(scene, camera);
+        });
+        var material = new THREE.MeshLambertMaterial({
+            map: texture
+        });
+        var cube = new THREE.Mesh(new THREE.CubeGeometry(5, 5, 5), material);
+        scene.add(cube);
+        renderer.render(scene, camera);
+    });
+    ////////////
+    //立方体灯光
+    ////////////
+    //渲染器
+    var renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('CubeCanvas')
+    });
+    renderer.setClearColor(0x000000); // black
+    //场景
+    var scene = new THREE.Scene();
+    //照相机
+    var camera = new THREE.OrthographicCamera(-2, 2, 1.5, -1.5, 1, 10);
+    camera.position.set(25, 25, 25);
+    scene.add(camera);
+    //灯光
+    var light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(10, 15, 2);
+    scene.add(light);
+    var material = new THREE.MeshLambertMaterial({
+        color: 0xffff00
+    });
+    var cube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1.5, 1.5), material);
+    scene.add(cube);
+    camera.position.set(2, 2, -1);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    renderer.render(scene, camera);
+    ////////////
+    //立方自身发光
+    ////////////
+    renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('PlaneCanvas')
+    });
+    renderer.setClearColor(0x000000);
+    var scene = new THREE.Scene();
+    scene.add(camera);
+    material = new THREE.MeshLambertMaterial({
+        color: 0xffff00,
+        emissive: 0xff0000
+    });
+
+    cube = new THREE.Mesh(new THREE.CubeGeometry(1.5, 1.5, 1.5), material);
+    scene.add(cube);
+    camera.position.set(2, 2, -1);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    renderer.render(scene, camera);
+    ////////////
+    //Phong材质球
+    ////////////
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('SphereCanvas') });
+    renderer.setClearColor(0x000000);
+    var scene = new THREE.Scene();
+    scene.add(camera);
+    var light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(10, 15, 1);
+    scene.add(light);
+    material = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffff00, shininess: 100 });
+    cube = new THREE.Mesh(new THREE.SphereGeometry(1.2, 30, 30), material);
+    scene.add(cube);
+    camera.position.set(2, 2, -1);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    renderer.render(scene, camera);
+    ///////
+    //法向材质
+    ///////
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('HalfSphereCanvas') });
+    renderer.setClearColor(0x000000);
+    var scene = new THREE.Scene();
+    scene.add(camera);
+    material = new THREE.MeshNormalMaterial();
+    Geometry = new THREE.CubeGeometry(1.5, 1.5, 1.5);
+    cube = new THREE.Mesh(Geometry, material);
+    scene.add(cube);
+    camera.position.set(2, 2, -1);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    renderer.render(scene, camera);
+    ///////////////////////
+    //单张图片应用于长方体
+    //////////////////////
+
+    ///////////////////////
+    //多张图片应用于长方体
+    //////////////////////
+    var renderer1 = new THREE.WebGLRenderer({
+        canvas: document.getElementById('SectorCanvas')
+    });
+    renderer1.setClearColor(0x000000);
+    var scene1 = new THREE.Scene();
+    // camera
+    var a = 0.7;
+    var camera1 = new THREE.OrthographicCamera(-10 * a, 10 * a, 7.5 * a, -7.5 * a, 0.1, 100);
+    camera1.position.set(10, 10, 10);
+    camera1.lookAt(new THREE.Vector3(0, 0, 0));
+    scene1.add(camera1);
+    // light
+    var light1 = new THREE.PointLight(0xffffff, 1, 1000);
+    light1.position.set(10, 15, 20);
+    scene1.add(light1);
+    var materials = [];
+    materials.push(new THREE.MeshBasicMaterial(
+        {
+            map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/0.png")', {},
+                function () {
+                    renderer1.render(scene1, camera1);
+                }),
+            overdraw: true
+        }));
+    materials.push(new THREE.MeshBasicMaterial(
+        {
+            map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/1.png")', {},
+                function () {
+                    renderer1.render(scene1, camera1);
+                }),
+            overdraw: true
+        }));
+    materials.push(new THREE.MeshBasicMaterial(
+    {
+        map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/2.png")', {},
+            function () {
+                renderer1.render(scene1, camera1);
+            }),
+        overdraw: true
+    }));
+    materials.push(new THREE.MeshBasicMaterial(
+    {
+        map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/3.png")', {},
+            function () {
+                renderer1.render(scene1, camera1);
+            }),
+        overdraw: true
+    }));
+    materials.push(new THREE.MeshBasicMaterial(
+    {
+        map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/4.png")', {},
+            function () {
+                renderer1.render(scene1, camera1);
+            }),
+        overdraw: true
+    }));
+    materials.push(new THREE.MeshBasicMaterial(
+    {
+        map: THREE.ImageUtils.loadTexture('@Url.Content("~/Images/5.png")', {},
+            function () {
+                renderer1.render(scene1, camera1);
+            }),
+        overdraw: true
+    }));
+
+    var cube = new THREE.Mesh(new THREE.CubeGeometry(5, 5, 5), materials);
+    scene1.add(cube);
+    renderer1.render(scene1, camera1);
+    ////////
+    //棋盘
+    ////////
+    var renderer2 = new THREE.WebGLRenderer({
+        canvas: document.getElementById('CylinderCanvas')
+    });
+    renderer2.setClearColor(0x000000);
+    scene2 = new THREE.Scene();
+    // camera
+    var a = 0.35;
+    var camera2 = new THREE.OrthographicCamera(-10 * a, 10 * a, 7.5 * a, -7.5 * a, 0.1, 100);
+    camera2.position.set(0, 0, 10);
+    camera2.lookAt(new THREE.Vector3(0, 0, 0));
+    scene2.add(camera2);
+    var light2 = new THREE.PointLight(0xffffff, 1, 1000);
+    light2.position.set(10, 15, 20);
+    scene2.add(light2);
+    var Plane = new THREE.PlaneGeometry(5, 5);
+    var texture = THREE.ImageUtils.loadTexture('@Url.Content("~/Images/chess.png")', {}, function () {
+        renderer2.render(scene2, camera2);
+    });
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 4);
+    var material = new THREE.MeshLambertMaterial({
+        map: texture
+    });
+    var Mes = new THREE.Mesh(Plane, material);
+    scene2.add(Mes);
+    renderer2.render(scene2, camera2);
+</script>

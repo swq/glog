@@ -1,0 +1,365 @@
+﻿
+@{
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Datepicker/datepicker3.css")" rel="stylesheet" />
+<div class="row">
+
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left;width:280px;">
+            <div class="box-header">
+                <div id='Spread_List' style='width: 100%; height: 807px;'></div>
+            </div>
+        </div>
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left; width:calc(100% - 280px);">
+            <div class="col-md-12">
+                <div>
+                    <div class="box-header">
+                        <table>
+                            <tr style="height:36px">
+                                <td width="60px" style="padding-left:0px">
+                                    <span style="font-size:14px">集装箱号:</span>
+                                </td>
+                                <td width="200px" style="padding-left:10px">
+                                    <table>
+                                        <tr>
+                                            <td width="60px"><input id="etc" width="50" class="form-control input-sm" type="text" placeholder="批次"></td>
+                                            <td width="130px" style="padding-left:10px"><input id="ShipRef" class="form-control input-sm" type="text" placeholder="集装箱号"></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="90px" style="padding-left:10px">
+                                    <span style="font-size:14px">集装箱类型:</span>
+                                </td>
+                                <td width="170px" style="padding-left:10px">
+                                    <select class="form-control  select2" id="ShipType">
+                                        <option selected = "selected">普柜</option>
+                                        <option>高柜</option>
+                                        <option>开顶柜</option>
+                                    </select>
+                                    @*<input id ="ShipType" class="form-control input-sm" type="text" placeholder="集装箱类型">*@
+                                </td>
+                                @*<td width="60px" style="padding-left:10px">
+                                    <span style="font-size:14px">发运员:</span>
+                                </td>
+                                <td width="150px" style="padding-left:10px">
+                                    <input class="form-control input-sm" type="text" placeholder="发运员">
+                                </td>*@
+                            </tr>
+                            <tr style="height:36px">
+                                <td width="60px" style="padding-left:0px">
+                                    <span style="font-size:14px">发货方:</span>
+                                </td>
+                                <td width="200px" style="padding-left:10px">
+                                    <input id ="ShipFrom" class="form-control input-sm" type="text" placeholder="发货方">
+                                </td>
+                                <td width="90px" style="padding-left:10px">
+                                    <span style="font-size:14px">运输公司:</span>
+                                </td>
+                                <td width="170px" style="padding-left:10px">
+                                    <input id ="Forwarder" class="form-control input-sm" type="text" placeholder="运输公司">
+                                </td>
+                            </tr>
+                            <tr style="height:36px">
+                                <td width="60px" style="padding-left:0px">
+                                    <span style="font-size:14px">收货方:</span>
+                                </td>
+                                <td width="200px" style="padding-left:10px">
+                                    <input id="ShipTo" class="form-control input-sm" type="text" placeholder="收货方">
+                                </td>
+                                <td width="90px" style="padding-left:10px">
+                                    <span style="font-size:14px">尺寸:</span>
+                                </td>
+                                <td width="170px" style="padding-left:10px">
+                                    @*<input id="Size" class="form-control input-sm" type="text" placeholder="尺寸">*@
+                                    <select class="form-control  select2" id="Size">
+                                        <option selected = "selected">20尺</option>
+                                        <option>40尺</option>
+                                    </select>
+                                </td>
+                                @*<td width="60px" style="padding-left:10px">
+                                    <span style="font-size:14px">长度:</span>
+                                </td>
+                                <td width="150px" style="padding-left:10px">
+                                    <input class="form-control input-sm" type="text" placeholder="长度">
+                                </td>*@
+                            </tr>
+                            <tr style="height:16px"></tr>
+                        </table>
+                        <div class="btn-group" style='width: 100%; margin-left:0px;'>
+                            <button class="btn btn-primary" type="button" id="btn_Create">
+                                <span class="fa fa-align-right"></span>&nbsp;创建集装箱
+                            </button>
+                            <button class="btn btn-primary" type="button" id="btn_Confirm">
+                                <span class="fa fa-tag"></span>&nbsp;确认发货
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">发货信息:</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <form role="form">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>发货地址:</label>
+                                <textarea id="SenderAddr" class="form-control" rows="3" placeholder="发货地址"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>包装地址:</label>
+                                <textarea id="PickAddr" class="form-control" rows="3" placeholder="包装地址"></textarea>
+                            </div>
+                            <!-- textarea -->
+                            <div class="form-group">
+                                <label>联系人:</label>
+                                <input id="ContactSender" class="form-control" placeholder="联系人" type="text">
+                            </div>
+
+                        </form>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">接受方</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <form role="form">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>接受地址:</label>
+                                <textarea id="ReceiveAddr" class="form-control" rows="3" placeholder="接受地址:"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>交付地址:</label>
+                                <textarea id="DeliveryAddr" class="form-control" rows="3" placeholder="交付地址:"></textarea>
+                            </div>
+                            <!-- textarea -->
+                            <div class="form-group">
+                                <label>联系人:</label>
+                                <input id="ContactReceiver" class="form-control" placeholder="联系人:" type="text">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="box box-primary direct-chat direct-chat-primary">
+                    <div class="box-header">
+                    </div>
+                    <div id='MianSpread' style='width: 100%; height: 200px;'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.zh-CN.js"></script>
+<script src="~/Scripts/resize.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var spread_list;
+    var sheet_list;
+    var sheet;
+    var ShipID;
+    var colInfoslist = [
+    { name: 'ID', size: 20, visible: false },
+    { name: 'etc', displayName: '批次', size: 60, visible: true, formatter: Text },
+    { name: 'ShipRef', displayName: '集装箱号', size: 110, formatter: Text },
+    { name: 'ShipStatus', displayName: '状态', size: 70, formatter: Text }
+    ];
+    var colInfos = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'DeliveryNote', displayName: '包装箱号', size: 150, formatter: Text },
+        { name: 'Stillage_Type', displayName: '包装箱类型', size: 120, formatter: Text },
+        { name: 'Stillage_Status', displayName: '包装箱状态', size: 120, formatter: Text },
+        { name: 'Weight', displayName: '重', size: 80, formatter: Number },
+        { name: 'Width', displayName: '宽', size: 80, formatter: Number },
+        { name: 'Length', displayName: '长', size: 80, formatter: Number },
+        { name: 'Height', displayName: '高', size: 80, formatter: Number }
+    ];
+
+    $(function () {
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        spread.options.allowCopyPasteExcelStyle = false;
+        sheet = spread.getSheet(0);
+        $.post('/Forward/GetShip', function (result) {
+            if (result.Msg == "success") {
+                spread_list = new GC.Spread.Sheets.Workbook(document.getElementById('Spread_List'), { sheetCount: 1 });
+                Spread_listInit(result.Data);
+            }
+        });
+
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+        $("#etc").val('');
+        $("#ShipRef").val('');
+        $("#ShipFrom").val('');
+        $("#ShipTo").val('');
+        $("#ShipType").val('普柜');
+        $("#Forwarder").val('');
+        $("#Size").val('20尺');
+        $("#SenderAddr").val('');
+        $("#PickAddr").val('');
+        $("#ContactSender").val('');
+        $("#ReceiveAddr").val('');
+        $("#DeliveryAddr").val('');
+        $("#ContactReceiver").val('');
+        ShipID = null;
+    });
+
+    $('#btn_Create').click(function () {
+        var Header = {};
+        Header.etc = $("#etc").val();
+        Header.ShipRef = $("#ShipRef").val();
+        Header.ShipFrom = $("#ShipFrom").val();
+        Header.ShipTo = $("#ShipTo").val();
+        Header.ShipType = $("#ShipType").val();
+        Header.Forwarder = $("#Forwarder").val();
+        Header.Size = $("#Size").val();
+        Header.SenderAddr = $("#SenderAddr").val();
+        Header.PickAddr = $("#PickAddr").val();
+        Header.ContactSender = $("#ContactSender").val();
+        Header.ReceiveAddr = $("#ReceiveAddr").val();
+        Header.DeliveryAddr = $("#DeliveryAddr").val();
+        Header.ContactReceiver = $("#ContactReceiver").val();
+        //if (Header.etc != null  )
+        //{}
+        $.post("/Forward/CreateShip",
+            { "ShipHeader": JSON.stringify(Header) },
+            function (result) {
+                Spread_listInit(result.Data);
+        });
+    });
+    //
+    function Spread_listInit(Data) {
+        sheet_list = spread_list.getSheet(0);
+        sheet_list.autoGenerateColumns = false;
+        sheet_list.bindColumns(colInfoslist);
+        sheet_list.setDataSource(Data);
+        Filter(sheet_list);
+        sheet_list.options.rowHeaderVisible = false;
+        sheet_list.invalidateLayout();
+        sheet_list.repaint();
+        var Click = GC.Spread.Sheets.Events.CellClick;
+        sheet_list.bind(Click, function (e, args) {
+            ShipID = sheet_list.getValue(args.row, 0);
+            $.post('/Forward/GetDataShip', { 'ShipID': ShipID },
+                function (result) {
+                    if (result.Msg == "success") {
+                        $("#etc").val(result.Head.etc);
+                        $("#ShipRef").val(result.Head.ShipRef);
+                        $("#ShipFrom").val(result.Head.ShipFrom);
+                        $("#ShipTo").val(result.Head.ShipTo);
+                        $("#ShipType").val(result.Head.ShipType);
+                        $("#Forwarder").val(result.Head.Forwarder);
+                        $("#Size").val(result.Head.Size);
+                        $("#SenderAddr").val(result.Head.SenderAddr);
+                        $("#PickAddr").val(result.Head.PickAddr);
+                        $("#ContactSender").val(result.Head.ContactSender);
+                        $("#ReceiveAddr").val(result.Head.ReceiveAddr);
+                        $("#DeliveryAddr").val(result.Head.DeliveryAddr);
+                        $("#ContactReceiver").val(result.Head.ContactReceiver);
+                        ShipID = result.Head.ID;
+                        if (result.Head.ShipStatus == "已发运") {
+                            $('#btn_Confirm').prop('disabled', true);
+                        } else {
+                            $('#btn_Confirm').prop('disabled', false);
+                        }
+                        if (result.Data.length == 0) {
+                            sheet.deleteRows(0, sheet.getRowCount());
+                            sheet.clearPendingChanges();
+                            SpreadInit(sheet);
+                            NewCreate = true;
+                        }
+                        else {
+                            sheet.autoGenerateColumns = false;
+                            sheet.bindColumns(colInfos);
+                            sheet.setDataSource(result.Data);
+                            Filter(sheet);
+                            NewCreate = false;
+                        }
+                    }
+                });
+        });
+    }
+
+    function SpreadInit(sheet) {
+        sheet.setColumnCount(8, GC.Spread.Sheets.SheetArea.viewport);
+        //列宽
+        sheet.setColumnWidth(0, 80);
+        sheet.setColumnWidth(1, 140);
+        sheet.setColumnWidth(2, 140);
+        sheet.setColumnWidth(3, 60);
+        sheet.setColumnWidth(4, 90);
+        sheet.setColumnWidth(5, 90);
+        sheet.setColumnWidth(6, 90);
+        sheet.setColumnWidth(7, 90);
+        //列头文本
+        sheet.setValue(0, 0, "ID", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 1, "包装箱号", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 2, "包装箱类型", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 3, "包装箱状态", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 4, "重", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 5, "宽", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 6, "长", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 7, "高", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setColumnVisible(0, false);
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 8));
+        sheet.setRowCount(0, GC.Spread.Sheets.SheetArea.viewport);
+        sheet.rowFilter(filter);
+    }
+    //筛选
+    function Filter(sheet) {
+        //获取行数
+        var rcount = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        var ccount = sheet.getColumnCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, rcount, ccount));
+        sheet.rowFilter(filter);
+    }
+    //已发货确认
+    $('#btn_Confirm').click(function () {
+        $.post("/Forward/ConfrimFH", { "ShipID": ShipID },
+            function (result) {
+                if (result.Msg == 'success') {
+                    alert('已发货确认。');
+                    $.post('/Forward/GetShip', function (result) {
+                        if (result.Msg == "success") {
+                            Spread_listInit(result.Data);
+                        }
+                    });
+                } else {
+                    alert('发货确认失败。');
+                }
+            });
+    });
+</script>

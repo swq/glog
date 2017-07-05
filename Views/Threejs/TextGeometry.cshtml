@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">3D演练几何形状及材质：</h4>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div style="float:left">
+                    <h3>字体：</h3>
+                    <canvas id="mainCanvas" style="width:400px;height:300px"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/Threejs/three.js"></script>
+
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<script type="text/javascript">
+    var renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById('mainCanvas')
+    });
+    renderer.setClearColor(0x000000);
+    var scene = new THREE.Scene();
+
+    // camera
+    //var camera = new THREE.OrthographicCamera(-2.5, 2.5, 1.875, -1.875, 0.1, 100);
+    //camera.position.set(5, 5, 20);
+    //camera.lookAt(new THREE.Vector3(1, 0, 0));
+    
+    var camera = new THREE.OrthographicCamera(-4, 4, 3, -3, 1, 50);
+    //var camera = new THREE.OrthographicCamera(-2, 2, 1.5, -1.5, 1, 10);
+    camera.position.set(2, 2, 20);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    scene.add(camera);
+    // draw axes to help you understand the coordinate
+    //drawAxes(scene);
+
+    var material = new THREE.MeshBasicMaterial({
+        color: 0xffff00,
+        wireframe: true
+    });
+
+     //var light = new THREE.DirectionalLight(0xffffff);
+     //light.position.set(-5, 10, 5);
+     //scene.add(light);
+
+    // load font
+    var loader = new THREE.FontLoader();
+    //var path = "Scripts/Threejs/helvetiker_regular.typeface.json";
+    loader.load("@Url.Content("~/Scripts/Threejs/helvetiker_regular.typeface.json")", function(font) {
+        var mesh = new THREE.Mesh(new THREE.TextGeometry('Hello', {
+            font: font,
+            size: 1,
+            height: 1
+        }), material);
+        scene.add(mesh);
+
+        // render
+        renderer.render(scene, camera);
+    });
+
+    function drawAxes(scene) {
+        // x-axis
+        var xGeo = new THREE.Geometry();
+        xGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+        xGeo.vertices.push(new THREE.Vector3(1, 0, 0));
+        var xMat = new THREE.LineBasicMaterial({
+            color: 0xff0000
+        });
+        var xAxis = new THREE.Line(xGeo, xMat);
+        scene.add(xAxis);
+
+        // y-axis
+        var yGeo = new THREE.Geometry();
+        yGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+        yGeo.vertices.push(new THREE.Vector3(0, 1, 0));
+        var yMat = new THREE.LineBasicMaterial({
+            color: 0x00ff00
+        });
+        var yAxis = new THREE.Line(yGeo, yMat);
+        scene.add(yAxis);
+
+        // z-axis
+        var zGeo = new THREE.Geometry();
+        zGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+        zGeo.vertices.push(new THREE.Vector3(0, 0, 1));
+        var zMat = new THREE.LineBasicMaterial({
+            color: 0x00ccff
+        });
+        var zAxis = new THREE.Line(zGeo, zMat);
+        scene.add(zAxis);
+    }
+
+
+</script>

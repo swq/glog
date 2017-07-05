@@ -1,0 +1,415 @@
+﻿
+@{
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Datepicker/datepicker3.css")" rel="stylesheet" />
+<div class="row">
+    <div style="visibility:hidden">
+        <img src="~/Images/ArrowLeft.png" id="ArrowLeft" />
+        <img src="~/Images/ArrowRight.png" id="ArrowRight" />
+        @*<img src="~/Images/ArrowLeft.png" />*@
+    </div>
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left;width:280px;">
+            <div class="box-header">
+                <div id='Spread_List' style='width: 100%; height: 807px;'></div>
+            </div>
+        </div>
+        <div class="box box-primary direct-chat direct-chat-primary" style="float:left; width:calc(100% - 280px);">
+            <div class="col-md-12">
+                <div>
+                    <div class="box-header">
+                        <table>
+                            <tr>
+                                <td width="100px" align="center">
+                                    <span style="font-size:14px">集装箱号:</span>
+                                </td>
+                                <td width="200px">
+                                    <input id="ShipRef" class="form-control input-sm" type="text" placeholder="集装箱号">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="btn-group" style='width: 100%; margin-left:1px; margin-bottom:2px'>
+                        <button class="btn btn-primary" type="button" id="btn_Save">
+                            <span class="fa fa-save"></span>保存
+                        </button>
+                        @*<button class="btn btn-app" type="button" id="btn_Delete">
+                            <span class="fa fa-times"></span>删除
+                        </button>*@
+                        <button class="btn btn-primary" type="button" id="btn_Count">
+                            <span class="fa fa-building"></span>确认完成
+                        </button>
+                    </div>
+                    <div>
+                        <div style="float:left; width:33%;">
+                            <div style="background-color:#B8BFD8">
+                                <span class="fa fa-align-right"></span>&nbsp;<i>已装入集装箱的包装箱</i>
+                            </div>
+                            <div id='Spread1' style='width: 100%; height: 690px;'></div>
+                        </div>
+                        <div style="float:left; width:33%;">
+                            <div style="background-color:#B8BFD8">
+                                <span class="fa fa-align-right"></span>&nbsp;<i>可选的包装箱</i>
+                            </div>
+                            <div id='Spread2' style='width: 100%; height: 690px;'></div>
+                        </div>
+                        <div style="float:left; width:33%;">
+                            <div style="background-color:#B8BFD8">
+                                <span class="fa fa-align-right"></span>&nbsp;<i>包装箱内物料</i>
+                            </div>
+                            <div id='Spread3' style='width: 100%; height: 690px;'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/Datepicker/bootstrap-datepicker.zh-CN.js"></script>
+<script src="~/Scripts/resize.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var StillageInfo = {};
+    var spread1;
+    var spread2;
+    var spread3;
+    var sheet1;
+    var sheet2;
+    var sheet3;
+    var spread_list;
+    var sheet_list;
+    var sheet;
+    var ShipID;
+    function ArrowLeftCellType() {
+        this.size = 10;
+    }
+    ArrowLeftCellType.prototype = new spreadNS.CellTypes.Base();
+    ArrowLeftCellType.prototype.paint = function (ctx, value, x, y, w, h, style, options) {
+        if (!ctx) {
+            return;
+        }
+        ctx.save();
+        // draw inside the cell's boundary
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        ctx.beginPath();
+        if (value) {
+            ctx.fillStyle = "green";
+        } else {
+            ctx.fillStyle = "gray";
+        }
+        ctx.beginPath();
+        var img = document.getElementById("ArrowLeft");
+        ctx.drawImage(img, x + 3, y + 3);
+        ctx.closePath();
+        ctx.restore();
+    };
+    function ArrowRightCellType() {
+        this.size = 10;
+    }
+    ArrowRightCellType.prototype = new spreadNS.CellTypes.Base();
+    ArrowRightCellType.prototype.paint = function (ctx, value, x, y, w, h, style, options) {
+        if (!ctx) {
+            return;
+        }
+        ctx.save();
+        // draw inside the cell's boundary
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        ctx.beginPath();
+        var img = document.getElementById("ArrowRight");
+        ctx.drawImage(img, x + 3, y + 3);
+        ctx.closePath();
+        ctx.restore();
+    };
+    var colInfoslist = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'etc', displayName: '批次', size: 60, visible: true, formatter: Text },
+        { name: 'ShipRef', displayName: '集装箱号', size: 110, formatter: Text },
+        { name: 'ShipStatus', displayName: '状态', size: 70, formatter: Text }
+    ];
+    var colInfos1 = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'DeliveryNote', displayName: '包装箱号', size: 120, formatter: Text },
+        { name: 'Stillage_Type', displayName: '类型', size: 70, formatter: Text },
+        { name: 'btn', displayName: ' ', size: 20, formatter: Number, cellType: new ArrowRightCellType() },
+        { name: 'StillageID', size: 20, visible: false }
+    ];
+    var colInfos2 = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'btn', displayName: '', size: 20, formatter: Number, cellType: new ArrowLeftCellType() },
+        { name: 'DeliveryNote', displayName: '包装箱号', size: 120, formatter: Text },
+        { name: 'Stillage_Type', displayName: '类型', size: 70, formatter: Text },
+        { name: 'ShipitemID', displayName: '', size: 20, formatter: Text, visible: false }
+    ];
+
+    var colInfos3 = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'BT_Code', displayName: 'BT号', size: 80, formatter: Number },
+        { name: 'Description_CN', displayName: '中文描述', size: 120, formatter: Text },
+        { name: 'Qty', displayName: '数量', size: 50, formatter: Text },
+        { name: 'Units', displayName: '单位', size: 50, formatter: Text }
+    ];
+
+    $(function () {
+        var spread1 = new GC.Spread.Sheets.Workbook(document.getElementById('Spread1'), { sheetCount: 1 });
+        sheet1 = spread1.getSheet(0);
+        sheet1.options.rowHeaderVisible = false;
+        sheet1.setColumnCount(5);
+
+        var spread2 = new GC.Spread.Sheets.Workbook(document.getElementById('Spread2'), { sheetCount: 1 });
+        sheet2 = spread2.getSheet(0);
+        SpreadInitPr2(sheet2);
+
+        var spread3 = new GC.Spread.Sheets.Workbook(document.getElementById('Spread3'), { sheetCount: 1 });
+        sheet3 = spread3.getSheet(0);
+        sheet3.options.rowHeaderVisible = false;
+        sheet3.setColumnCount(4);
+        //取集装箱
+        $.post('/Forward/GetShip', function (result) {
+            if (result.Msg == "success") {
+                spread_list = new GC.Spread.Sheets.Workbook(document.getElementById('Spread_List'), { sheetCount: 1 });
+                ShipStillage(result.Data);
+            }
+        });
+        $('#main_box').resize(function () {
+            spread1.refresh();
+            spread2.refresh();
+            spread3.refresh();
+        });
+    });
+
+    $('#btn_Create').click(function () {
+        var Header = {};
+        Header.etc = $("#etc").val();
+        Header.ShipRef = $("#ShipRef").val();
+        Header.ShipFrom = $("#ShipFrom").val();
+        Header.ShipTo = $("#ShipTo").val();
+        Header.ShipType = $("#ShipType").val();
+        Header.Forwarder = $("#Forwarder").val();
+        Header.Size = $("#Size").val();
+        Header.SenderAddr = $("#SenderAddr").val();
+        Header.PickAddr = $("#PickAddr").val();
+        Header.ContactSender = $("#ContactSender").val();
+        Header.ReceiveAddr = $("#ReceiveAddr").val();
+        Header.DeliveryAddr = $("#DeliveryAddr").val();
+        Header.ContactReceiver = $("#ContactReceiver").val();
+        $.post("/Forward/CreateShip",
+            { "ShipHeader": JSON.stringify(Header) },
+            function (result) {
+                Spread_listInit(result.Data);
+        });
+    });
+    //
+    $('#btn_Save').click(function () {
+        var items = [];
+        for (var i = 0; i < sheet1.getRowCount(); i++)
+        {
+            var item = {};
+            var ID = sheet1.getValue(i, 0)
+            item.ID = ID == null ? 0 : ID;
+            item.StillageID = sheet1.getValue(i, 4);
+            item.ShipID = ShipID == null ? 0 : ShipID;
+            items.push(item);
+        }
+        $.post("/Forward/Save", { 'items': JSON.stringify(items), 'ShipID': ShipID },
+            function (Mess) {
+                alert('保存成功！');
+            });
+    });
+    //获取可选的包装箱
+    function AvailableStillage(sheet)
+    {
+        $.post('/Forward/GetStillageH', function (result) {
+            if (result.Msg == "success")
+            {
+                sheet.autoGenerateColumns = false;
+                sheet.bindColumns(colInfos2);
+                sheet.setDataSource(result.Data);
+                Filter(sheet);
+            }
+        });
+    }
+    //
+    function ColICON_Status(sheet, COLIndex)
+    {
+        var iconSetRule = new GC.Spread.Sheets.ConditionalFormatting.IconSetRule();
+        iconSetRule.ranges([new GC.Spread.Sheets.Range(0, COLIndex, sheet.getRowCount()-1, COLIndex)]);
+        iconSetRule.iconSetType(GC.Spread.Sheets.ConditionalFormatting.IconSetType.fourTrafficLights);
+        var iconCriteria = iconSetRule.iconCriteria();
+        iconCriteria[0] = new GC.Spread.Sheets.ConditionalFormatting.IconCriterion(true, GC.Spread.Sheets.ConditionalFormatting.IconValueType.number, 1);
+        iconCriteria[1] = new GC.Spread.Sheets.ConditionalFormatting.IconCriterion(true, GC.Spread.Sheets.ConditionalFormatting.IconValueType.number, 10);
+        iconCriteria[2] = new GC.Spread.Sheets.ConditionalFormatting.IconCriterion(true, GC.Spread.Sheets.ConditionalFormatting.IconValueType.number, 20);
+        iconSetRule.reverseIconOrder(false);
+        iconSetRule.showIconOnly(true);
+        sheet.conditionalFormats.addRule(iconSetRule);
+    }
+
+    //已装入集装箱的包装箱
+    function ShipStillage(Data) {
+        sheet_list = spread_list.getSheet(0);
+        sheet_list.autoGenerateColumns = false;
+        sheet_list.bindColumns(colInfoslist);
+        sheet_list.setDataSource(Data);
+        Filter(sheet_list);
+        sheet_list.options.rowHeaderVisible = false;
+        sheet_list.invalidateLayout();
+        sheet_list.repaint();
+        var Click = GC.Spread.Sheets.Events.CellClick;
+        sheet_list.bind(Click, function (e, args) {
+            ShipID = sheet_list.getValue(args.row, 0);
+            $.post('/Forward/GetDataShip', { 'ShipID': ShipID },
+                function (result) {
+                    if (result.Msg == "success") {
+                        $("#ShipRef").val(result.Head.ShipRef);
+                        if (result.Data.length == 0) {
+                            sheet1.deleteRows(0, sheet1.getRowCount());
+                            sheet1.clearPendingChanges();
+                            SpreadInit1(sheet1);
+                            AvailableStillage(sheet2);
+                            NewCreate = true;
+                        }
+                        else {
+                            sheet1.autoGenerateColumns = false;
+                            sheet1.bindColumns(colInfos1);
+                            sheet1.setDataSource(result.Data);
+                            Filter(sheet1);
+                            AvailableStillage(sheet2);
+                            NewCreate = false;
+                        }
+                    }
+                });
+        });
+
+    }
+    //
+    function SpreadInit1(sheet) {
+        sheet.setColumnCount(5, GC.Spread.Sheets.SheetArea.viewport);
+        //列宽
+        sheet.setColumnWidth(0, 50);
+        sheet.setColumnWidth(1, 120);
+        sheet.setColumnWidth(2, 70);
+        sheet.setColumnWidth(3, 20);
+        sheet.setColumnWidth(4, 20);
+        //列头文本
+        sheet.setValue(0, 0, "ID", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 1, "包装箱号", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 2, "包装箱类型", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setValue(0, 3, "", GC.Spread.Sheets.SheetArea.colHeader);
+        //sheet.setValue(0, 4, "", GC.Spread.Sheets.SheetArea.colHeader);
+        sheet.setColumnVisible(0, false);
+        sheet.setColumnVisible(4, false);
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 5));
+        sheet.setRowCount(0, GC.Spread.Sheets.SheetArea.viewport);
+        sheet.rowFilter(filter);
+    }
+    //
+    function SpreadInitPr2(sheet)
+    {
+        sheet.options.rowHeaderVisible = false;
+        sheet.setColumnCount(5);
+        //ColICON_Status(sheet, 4);
+        AvailableStillage(sheet);
+        var option = {
+            allowFilter: true,
+            allowSort: true,
+            allowResizeRows: false,
+            allowResizeColumns: true,
+            allowEditObjects: false
+        };
+        sheet.options.protectionOptions = option;
+        sheet.options.isProtected = true;
+        var Click = GC.Spread.Sheets.Events.CellClick;
+        sheet.bind(Click, function (e, args) {
+            if (ShipID != null)
+            {
+                if (args.col == 1) {
+                    sheet1.addRows(sheet1.getRowCount(), 1);
+                    sheet1.setValue(sheet1.getRowCount() - 1, 4, sheet.getValue(args.row, 0));
+                    sheet1.setValue(sheet1.getRowCount() - 1, 1, sheet.getValue(args.row, 2));
+                    sheet1.setValue(sheet1.getRowCount() - 1, 2, sheet.getValue(args.row, 3));
+                    sheet1.setCellType(sheet1.getRowCount() - 1, 3, new ArrowRightCellType());
+                    Filter(sheet1);
+                    sheet.deleteRows(args.row, 1);
+                }
+            }
+        });
+
+        sheet1.bind(Click, function (e, args) {
+            if (args.col == 3 && args.row != undefined)
+            {
+                sheet2.addRows(sheet2.getRowCount(), 1);
+                Filter(sheet2);
+                sheet2.setValue(sheet2.getRowCount() - 1, 0, sheet1.getValue(args.row, 4));
+                sheet2.setValue(sheet2.getRowCount() - 1, 2, sheet1.getValue(args.row, 1));
+                sheet2.setValue(sheet2.getRowCount() - 1, 3, sheet1.getValue(args.row, 2));
+                sheet2.setValue(sheet2.getRowCount() - 1, 4, sheet1.getValue(args.row, 0));
+                sheet2.setCellType(sheet2.getRowCount() - 1, 1, new ArrowLeftCellType());
+                sheet1.deleteRows(args.row, 1);
+                Filter(sheet1);
+            } else {
+                var StillageID = sheet1.getValue(args.row, 4);
+                if (StillageID != null)
+                {
+                    $.post('/Forward/GetStillageBT', { StillageID: StillageID }, function (result) {
+                        sheet3.autoGenerateColumns = false;
+                        sheet3.bindColumns(colInfos3);
+                        sheet3.setDataSource(result.Data);
+                        var option = {
+                            allowFilter: true,
+                            allowSort: true,
+                            allowResizeRows: false,
+                            allowResizeColumns: true,
+                            allowEditObjects: false
+                        };
+                        sheet3.options.protectionOptions = option;
+                        sheet3.options.isProtected = true;
+                    });
+                }
+            }
+        });
+    }
+    //
+    //function SpreadInitS1(sheet) {
+    //    sheet.options.rowHeaderVisible = false;
+    //    sheet.setColumnCount(4);
+    //    ColICON_Status(sheet, 3);
+    //    AvailableStillage(sheet);
+    //    var option = {
+    //        allowFilter: true,
+    //        allowSort: true,
+    //        allowResizeRows: false,
+    //        allowResizeColumns: true,
+    //        allowEditObjects: false
+    //    };
+    //    sheet.options.protectionOptions = option;
+    //    sheet.options.isProtected = true;
+    //}
+    //筛选
+    function Filter(sheet) {
+        //获取行数
+        var rcount = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        var ccount = sheet.getColumnCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, rcount, ccount));
+        sheet.rowFilter(filter);
+    }
+
+</script>

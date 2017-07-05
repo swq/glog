@@ -1,0 +1,162 @@
+﻿using gLog_FrontEnd.Filters;
+using gLog_FrontEnd.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+
+namespace gLog_FrontEnd.Controllers
+{
+    public class ExcelViewController : Controller
+    {
+        private gLog_FrontEndContext db = new gLog_FrontEndContext();
+        //
+        // GET: /Module/
+        [AdminLayout]
+        public ActionResult Index()
+        {
+            return View();
+        }
+<<<<<<< .mine
+=======
+
+        public JsonResult Save(string HeadData, string Celldata,string ExcelJson)
+        {
+            var mess = "fail";
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            try
+            {
+                var Datas = js.Deserialize<List<T_ViewCelldata>>(Celldata);
+                var Heads = js.Deserialize<T_ViewInfo>(HeadData);
+                var user = Session["User"] as T_Auth_User;
+                string FilePath = HttpContext.Server.MapPath(@"~\ExcelViewData\{0}.ssjson");
+                FilePath = string.Format(FilePath, Heads.ViewGUID);
+                var bl = File_IO.File_Write(FilePath, ExcelJson);
+                if (bl)
+                {
+                    Heads.Path = FilePath;
+                    Heads.UserId = user.Id;
+                    Heads.CreateDate = DateTime.Now;
+                    db.T_ViewInfo.Add(Heads);
+                    db.T_ViewCelldata.AddRange(Datas);
+                    var count = db.SaveChanges();
+                    if (count > 0)
+                    {
+                        mess = "success";
+                    }
+                    return Json(new { mess = mess }, JsonRequestBehavior.AllowGet);
+                }
+                else{ return Json(new { mess = mess }, JsonRequestBehavior.AllowGet); }
+            }
+            catch 
+            { return Json(new { mess = mess }, JsonRequestBehavior.AllowGet); }
+        }
+
+        //
+        [AdminLayout]
+        public ActionResult ViewShow()
+        {
+            return View();
+        }
+
+        public JsonResult GetTemplateJson(string Code)
+        {
+            if (string.IsNullOrWhiteSpace(Code))
+            {
+                return Json("");
+            }
+            string name = HttpContext.Server.MapPath(@"~\ExcelViewData\{0}.ssjson");
+            name = string.Format(name, Code);
+            return Json(File_IO.File_Read(name), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProssData(string Code)
+        {
+            //var sw = new Stopwatch();
+            //sw.Start();
+            var Pro_id = db.T_ViewInfo.Where(s => s.ViewGUID == Code).FirstOrDefault().Pro_id;
+
+            #region 发运
+            var q = (from l in db.Set<T_ShipData>()
+                     join l1 in db.Set<T_ShipHeader>() on l.ShipID equals l1.ID
+                     join l2 in db.Set<T_StillageData>() on l.StillageID equals l2.StillageID
+                     join l3 in db.T_BT_INFO on l2.BTID equals l3.ID
+                     where l2.ProID == Pro_id && l1.ShipStatus == "已发运"
+                     select new
+                     {
+                         l.ID,
+                         l.StillageID,
+                         l1.ShipRef,
+                         l2.BTID,
+                         l3.BT_Code
+                     });
+            var FY = from BT in q
+                         join Cell in db.T_ViewCelldata on BT.BT_Code equals Cell.CellValue
+                         where Cell.ViewGUID == Code
+                         select new
+                         {
+                             BTID = BT.BTID,
+                             type = 2,
+                             BTCode = Cell.CellValue,
+                             X = Cell.Cell_X,
+                             Y = Cell.Cell_Y
+                         };
+
+            #endregion
+
+            #region 物料维护
+            var SJ = from BT in db.T_BT_INFO
+                     join TA in db.CNYD_STRUCT_TREE on BT.TA_ID equals TA.ID_
+                     join Cell in db.T_ViewCelldata on BT.BT_Code equals Cell.CellValue
+                     where Cell.ViewGUID == Code && BT.Pro_ID == Pro_id && TA.MAT_STATUS == true
+                     select new
+                     {
+                         BTID = BT.ID,
+                         type = 1,
+                         BTCode = Cell.CellValue,
+                         X = Cell.Cell_X,
+                         Y = Cell.Cell_Y
+                     };
+            #endregion
+
+            #region 统计
+            var data = from l in SJ.Union(FY)
+                       group l by new { l.BTID, l.BTCode, l.X, l.Y } into g
+                       select new
+                       {
+                           BTID = g.Key.BTID,
+                           BTCode = g.Key.BTCode,
+                           TYPE = g.Max(s=>s.type),
+                           X = g.Key.X,
+                           Y = g.Key.Y
+                       };
+            #endregion
+            //sw.Stop();
+            //var d = sw.ToString();
+            return Json(new { data = data }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetLMTData(string ProId)
+        {
+            var LMT = db.T_ViewInfo.Where(s => s.Pro_id == ProId && s.IsDelete == false)
+                .Select(s => new { id = s.ViewGUID, text = s.View_Name}).ToList();
+            string mess = "";
+            if (LMT.Count > 0)
+                mess = "success";
+            else
+                mess = "fail";
+            return Json(new { mess = mess ,data = LMT }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+>>>>>>> .r1375
+    }
+}

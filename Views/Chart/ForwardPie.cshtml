@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div id="main" style="width:100%;height:650px;margin:0 auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script src="~/Scripts/ECharts/echarts.js"></script>
+<script src="~/Scripts/ECharts/vintage.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+        var myChart = echarts.init(document.getElementById('main'), 'vintage');
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '莱登办公楼生产发运比例图',
+                subtext: '截止2017-4-27',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: ['已安装完成', '已发出（在途）', '已生产完成', '待生产']
+
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: [
+                        { value: 785, name: '已安装完成' },
+                        { value: 310, name: '已发出（在途）' },
+                        { value: 234, name: '已生产完成' },
+                        { value: 2354, name: '待生产' }
+
+                    ],
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    });
+
+</script>

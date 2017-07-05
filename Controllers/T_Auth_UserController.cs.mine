@@ -1,0 +1,334 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using gLog_FrontEnd.Models;
+using System.Web.Security;
+using gLog_FrontEnd.Filters;
+using System.Web.Script.Serialization;
+using System.Data.Entity.Infrastructure;
+
+namespace gLog_FrontEnd.Controllers
+{
+    public class T_Auth_UserController : Controller
+    {
+        private gLog_FrontEndContext db = new gLog_FrontEndContext();
+
+        //
+        // 登录
+        public ActionResult Login()
+        {
+            return View();
+        }
+        //登录提交
+        [HttpPost]
+        public ActionResult Login(T_Auth_User model)
+        {
+
+            var newuser = new T_Auth_User  {
+                  LoginName="admin",
+                  LoginPwd = "123456"
+            };
+
+            db.T_Auth_User.Add(newuser);
+            db.SaveChanges();
+
+
+            model.LoginPwd = FormsAuthentication.HashPasswordForStoringInConfigFile(model.LoginPwd, "MD5").ToLower();
+            var user = db.T_Auth_User.FirstOrDefault(
+                s => s.LoginName == model.LoginName
+                    && s.LoginPwd == model.LoginPwd
+                    && s.Enabled == true
+                    && s.IsDeleted == false);
+
+            if (user != null)
+            {
+                Session["User"] = user;
+                Session.Timeout = 120;
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.Message = "用户名或密码错误！";
+                return View();
+            }
+
+        }
+        //主页面
+        [AdminLayout]
+        public ActionResult Index()
+        {
+            return View();
+        }
+        //获取用户数据
+        public JsonResult GetUser(int limit, int offset, string departmentname, string statu)
+        {
+
+            var t_auth_user = db.T_Auth_User.AsNoTracking().Where(s => s.IsDeleted == false)
+                .Select(s => new { s.Id, s.LoginName,s.LoginPwd, s.Phone, s.Email, s.Enabled, s.FullName })
+                .OrderBy(s => s.Id)
+                .Skip(offset)
+                .Take(limit)
+                .ToList();  //.Include(t => t.T_Country).Include(t => t.T_Part);
+            var total = t_auth_user.Count;
+            //var rows = t_auth_user.Skip(offset).Take(limit).ToList();
+            return Json(new { total = total, rows = t_auth_user }, JsonRequestBehavior.AllowGet);
+        }
+        //提交创建和修改
+        [HttpPost]
+        public JsonResult GetEdit(string data)
+        {
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var User = js.Deserialize<T_Auth_User>(data);
+            if (User.Id == -1)
+            {
+                User.PwdErrorCount = 0;
+                User.LoginCount = 0;
+                User.IsDeleted = false;
+                User.LoginPwd = FormsAuthentication.HashPasswordForStoringInConfigFile("123456", "MD5").ToLower();
+                db.T_Auth_User.Add(User);
+            }
+            else
+            {
+                DbEntityEntry<T_Auth_User> dbEntry = db.Entry<T_Auth_User>(User);
+                dbEntry.State = EntityState.Unchanged;
+                dbEntry.Property(s => s.FullName).IsModified = true;
+                dbEntry.Property(s => s.LoginName).IsModified = true;
+                dbEntry.Property(s => s.Phone).IsModified = true;
+                dbEntry.Property(s => s.Email).IsModified = true;
+                dbEntry.Property(s => s.Enabled).IsModified = true;
+            }
+            db.SaveChanges();
+            return Json(new { status = "success" }, JsonRequestBehavior.AllowGet);
+        }
+        //提交删除
+        [HttpPost]
+        public JsonResult Del(string data)
+        {
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var Users = js.Deserialize<List<T_Auth_User>>(data);
+            foreach (var temp in Users)
+            {
+                temp.IsDeleted = true;
+                db.Entry(temp).State = EntityState.Unchanged;
+                db.Entry(temp).Property(s => s.IsDeleted).IsModified = true;
+            }
+            var status = "success";
+            if(db.SaveChanges() <= 0)
+            {
+                status = "fail";
+            }
+            return Json(new { status = status }, JsonRequestBehavior.AllowGet);
+        }
+        //提交重置密码
+        [HttpPost]
+        public JsonResult ResetKey(string data)
+        {
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var Users = js.Deserialize<List<T_Auth_User>>(data);
+            foreach (var temp in Users)
+            {
+                temp.LoginPwd = FormsAuthentication.HashPasswordForStoringInConfigFile("123456", "MD5").ToLower();
+                DbEntityEntry<T_Auth_User> dbEntry = db.Entry<T_Auth_User>(temp);
+                dbEntry.State = EntityState.Unchanged;
+                dbEntry.Property(s => s.LoginPwd).IsModified = true;
+            }
+            var status = "success";
+            if (db.SaveChanges() <= 0)
+            {
+                status = "fail";
+            }
+            return Json(new { status = status }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult Set_Auther(int UserId)
+        {
+            var Roles = db.T_Auth_Role.AsNoTracking().Where(s => s.IsDeleted == false)
+                .Select(s => new {s.Id,s.Name});
+            var UserRoles = db.T_Auth_UserRole.AsNoTracking().Where(s => s.IsDeleted == false && s.UserId == UserId)
+                .Select(s => new { s.UserId, s.RoleId });
+
+            var data = (from Role in Roles
+                        join UserRole in UserRoles on
+                        Role.Id equals UserRole.RoleId into temps
+                        from temp in temps.DefaultIfEmpty()
+                        select new {id = Role.Id,Name = Role.Name,IsChecked = temp.RoleId != null ? true : false}).ToList();
+
+            return Json(new { Msg = "success", data = data }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult Save_Auther(string data, int UserId)
+        {
+            var Userinfo = Session["User"] as T_Auth_User;
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            var L_Id = js.Deserialize<List<int>>(data);
+
+            var oldDataList = db.T_Auth_UserRole.Where(t => t.UserId == UserId && t.IsDeleted == false)
+                .Select(t => t.RoleId).ToList();
+            var newDataList = js.Deserialize<List<int>>(data);
+            var intersectIds = oldDataList.Intersect(newDataList).ToList(); // Same Ids
+            var updateIds = oldDataList.Except(intersectIds).ToList(); // Remove Ids
+            var addIds = newDataList.Except(oldDataList).ToList(); // Add Ids
+            //逻辑删除
+            foreach (var removeId in updateIds)
+            {
+                var updateEntity = db.T_Auth_UserRole.AsNoTracking()
+                    .FirstOrDefault(t => t.UserId == UserId && t.RoleId == removeId && t.IsDeleted == false);
+
+                if (updateEntity != null)
+                {
+                    updateEntity.IsDeleted = true;
+                    db.Entry(updateEntity).State = EntityState.Unchanged;
+                    db.Entry(updateEntity).Property(s => s.IsDeleted).IsModified = true;
+                }
+            }
+            //插入 & 更新
+            foreach (var addId in addIds)
+            {
+                var updateEntity = db.T_Auth_UserRole.AsNoTracking()
+                    .FirstOrDefault(t => t.UserId == UserId && t.RoleId == addId && t.IsDeleted == true);
+                if (updateEntity != null)
+                {
+                    updateEntity.IsDeleted = false;
+                    updateEntity.ModifyId = Userinfo.Id;
+                    updateEntity.ModifyBy = Userinfo.LoginName;
+                    db.Entry(updateEntity).State = EntityState.Unchanged;
+                    db.Entry(updateEntity).Property(s => s.IsDeleted).IsModified = true;
+                    db.Entry(updateEntity).Property(s => s.ModifyId).IsModified = true;
+                    db.Entry(updateEntity).Property(s => s.ModifyBy).IsModified = true;
+                }
+                else
+                {
+                    var addEntity = new T_Auth_UserRole
+                    {
+                        UserId = UserId,
+                        RoleId = addId,
+                        CreateTime = DateTime.Now,
+                        ModifyId = Userinfo.Id,
+                        ModifyBy = Userinfo.LoginName,
+                        IsDeleted = false
+                    };
+                    db.T_Auth_UserRole.Add(addEntity);
+                }
+            }
+            var status = "success";
+            if (db.SaveChanges() <= 0)
+            {
+                status = "fail";
+            }
+
+            return Json(new { Msg = status }, JsonRequestBehavior.AllowGet);
+        }
+        //
+        // GET: /T_Auth_User/Details/5
+
+        public ActionResult Details(int id = 0)
+        {
+            T_Auth_User t_auth_user = db.T_Auth_User.Find(id);
+            if (t_auth_user == null)
+            {
+                return HttpNotFound();
+            }
+            return View(t_auth_user);
+        }
+
+        //
+        // GET: /T_Auth_User/Create
+
+        public ActionResult Create()
+        {
+            ViewBag.CountryID = new SelectList(db.T_Country, "ID", "Country");
+            ViewBag.PartID = new SelectList(db.T_Part, "ID", "FName");
+            return View();
+        }
+
+        //
+        // POST: /T_Auth_User/Create
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(T_Auth_User t_auth_user)
+        {
+            if (ModelState.IsValid)
+            {
+                db.T_Auth_User.Add(t_auth_user);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.CountryID = new SelectList(db.T_Country, "ID", "Country", t_auth_user.CountryID);
+            ViewBag.PartID = new SelectList(db.T_Part, "ID", "FName", t_auth_user.PartID);
+            return View(t_auth_user);
+        }
+
+        //
+        // GET: /T_Auth_User/Edit/5
+
+        public ActionResult Edit(int id = 0)
+        {
+            T_Auth_User t_auth_user = db.T_Auth_User.Find(id);
+            if (t_auth_user == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.CountryID = new SelectList(db.T_Country, "ID", "Country", t_auth_user.CountryID);
+            ViewBag.PartID = new SelectList(db.T_Part, "ID", "FName", t_auth_user.PartID);
+            return View(t_auth_user);
+        }
+
+        //
+        // POST: /T_Auth_User/Edit/5
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(T_Auth_User t_auth_user)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(t_auth_user).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.CountryID = new SelectList(db.T_Country, "ID", "Country", t_auth_user.CountryID);
+            ViewBag.PartID = new SelectList(db.T_Part, "ID", "FName", t_auth_user.PartID);
+            return View(t_auth_user);
+        }
+
+        //
+        // GET: /T_Auth_User/Delete/5
+
+        public ActionResult Delete(int id = 0)
+        {
+            T_Auth_User t_auth_user = db.T_Auth_User.Find(id);
+            if (t_auth_user == null)
+            {
+                return HttpNotFound();
+            }
+            return View(t_auth_user);
+        }
+
+        //
+        // POST: /T_Auth_User/Delete/5
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            T_Auth_User t_auth_user = db.T_Auth_User.Find(id);
+            db.T_Auth_User.Remove(t_auth_user);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <script src="Scripts/jQuery-2.2.0.min.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/typeahead/bootstrap3-typeahead.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var subjects = ['PHP', 'MySQL', 'SQL', 'PostgreSQL', 'HTML', 'CSS', 'HTML5', 'CSS3', 'JSON'];
+            $('#txt_ParentModule1').typeahead({ source: subjects });
+        });
+
+    </script>
+</head>
+<body>
+    <input type="text" class="span3" style="margin: 0 auto;" data-provide="typeahead" data-items="4" data-source="[&quot;Ahmedabad&quot;,&quot;Akola&quot;,&quot;Asansol&quot;,&quot;Aurangabad&quot;,&quot;Bangaluru&quot;,&quot;Baroda&quot;,&quot;Belgaon&quot;,&quot;Berhumpur&quot;,&quot;Calicut&quot;,&quot;Chennai&quot;,&quot;Chapra&quot;,&quot;Cherapunji&quot;]">
+    <input type="text" class="span3" id="txt_ParentModule1" data-provide="typeahead" data-items="4" />
+</body>
+</html>

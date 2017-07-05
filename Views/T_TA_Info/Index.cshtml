@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-multiple-limit" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile" style="margin-left:5px;margin-top:5px">
+                <div class="btn-group" style='width: 100%; margin-left:10px;'>
+                    <button class="btn btn-app" type="button" id="btn_add">
+                        <span class="fa fa-plus"></span>&nbsp;添加
+                    </button>
+                    <button class="btn btn-app" type="button" id="btn_Save">
+                        <span class="fa fa-save"></span>&nbsp;保存
+                    </button>
+                    <button class="btn btn-app " type="button" id="btn_Delete">
+                        <span class="fa fa-times"></span>&nbsp;删除
+                    </button>
+                    <button class="btn btn-app " type="button" id="Clear">
+                        <span class="fa fa-bookmark"></span>&nbsp;确认
+                    </button>
+                </div>
+                <!--<div><button id='Save' type="button" class="btn btn-block btn-info" style='width: 50px;'>保存</button></div>-->
+                <div id='MianSpread' style='width: calc(100% - 5px); height: 500px;margin-left:1px'></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<!--ztree-->
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.exedit.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var sheet;
+    var colInfos = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'PJ_ID', size: 100, visible: false },
+        { name: 'TA_Code', displayName: 'TA编号', size: 200, visible: true, formatter: Text },
+        { name: 'Floors', displayName: '楼层', size: 100, formatter: Text },
+        { name: 'Note', displayName: '描述', size: 200, formatter: Text },
+        { name: 'Note_EN', displayName: '英文描述', size: 200, resizable: false, formatter: Text },
+        { name: 'Enable', displayName: '是否可用', size: 100, resizable: false, formatter: Text },
+        { name: 'SortOrder', displayName: '排序', size: 100, resizable: false, formatter: Number }
+    ];
+    $(function () {
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        excelIo = new GC.Spread.Excel.IO();
+        sheet = spread.getActiveSheet();
+        sheet.setColumnCount(colInfos.length, GC.Spread.Sheets.SheetArea.viewport);
+        sheet.setRowCount(0);
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程...",
+                maximumSelectionLength: 3
+            }).val(null).trigger("change");
+        });
+
+        $("#Choise_PJ").on("select2:select", function (e) {
+            var PJ_ID_ = $("#Choise_PJ").val();
+            $.get('/T_TA_Info/GetTA_Info', { 'PJ_ID_': PJ_ID_ }, function (result) {
+                if (result.data.length > 0) {
+                    sheet.autoGenerateColumns = false;
+                    sheet.bindColumns(colInfos);
+                    sheet.setDataSource(result.data);
+                    Filter(sheet);
+                } else {
+                    sheet.autoGenerateColumns = false;
+                    sheet.bindColumns(colInfos);
+                    sheet.setDataSource(result.data);
+                    Filter(sheet);
+                }
+            });
+        });
+    });
+
+    //添加行(10)
+    $('#btn_add').click(function () {
+        var row = sheet.getRowCount();
+        sheet.suspendPaint();
+        sheet.addRows(row, 1);
+        sheet.setValue(row, 0, 0);
+        sheet.setValue(row, 1, $("#Choise_PJ").val());
+        sheet.setValue(row, 6, 1);
+        sheet.setValue(row, 7, 0);
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, colInfos.length));
+        sheet.rowFilter(filter);
+        sheet.resumePaint();
+    });
+    //保存--脏数据
+    $('#btn_Save').click(function () {
+        var Addrows = sheet.getInsertRows();
+        var Additems = JSON.stringify(Addrows.map(function (row) { return row.item; }));
+        var Changerows = sheet.getDirtyRows();
+        var Changeitems = JSON.stringify(Changerows.map(function (row) { return row.item; }));
+        var DeletedRows = sheet.getDeletedRows();
+        var Deleteditems = JSON.stringify(DeletedRows.map(function (row) { return row.item; }));
+        $.post("/T_TA_Info/Save", { 'AddJson': Additems, 'ChangeJosn': Changeitems, 'DeleteJosn': Deleteditems },
+            function (Mess) {
+                alert('保存成功！');
+            });
+    });
+    //删除行
+    $('#btn_Delete').click(function () {
+
+    });
+    function Filter(sheet) {
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, colInfos.length));
+        sheet.rowFilter(filter);
+    }
+</script>

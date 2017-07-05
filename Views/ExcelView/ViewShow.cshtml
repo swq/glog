@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewBag.Title = "ViewShow";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<input type="hidden" id="hdGuid" value="@ViewBag.Guid" />
+<div class="row" id="main">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <div style="float:left">
+                    <select class="form-control js-example-basic-single" style="width:220px" id="Choise_PJ"></select>
+                </div>
+                <div style="float:left;margin-left:10px">
+                    <select class="form-control js-example-basic-single" style="width:220px" id="Choise_LMT" disabled="disabled"></select>
+                </div>
+
+                <div class="btn-group" style='width: 100%;margin-top:10px;'>
+                    <button class="btn btn-app" type="button" id="Loading" disabled="disabled">
+                        <span class="fa fa-upload"></span>&nbsp;加载...
+                    </button>
+                    <button class="btn btn-app" type="button" id="Save" disabled="disabled">
+                        <span class="fa fa-refresh"></span>&nbsp;刷新状态
+                    </button>
+                    <button class="btn btn-app " type="button" id="Clear" disabled="disabled">
+                        <span class="fa fa-file-excel-o"></span>&nbsp;导出Excel
+                    </button>
+                </div>
+                <div id='MianSpread' style='width: 100%; height: 750px;'></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+
+<script type="text/javascript">
+    var spread;
+    var excelIo;
+    var sheet;
+    var spreadNS;
+    $(function () {
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        excelIo = new GC.Spread.Excel.IO();
+        spreadNS = GC.Spread.Sheets;
+        $("#Loading,#Save,#Clear,#Choise_LMT").prop('disabled', true);
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+
+        $("#Choise_LMT").select2({
+            data: null,
+            language: "zh-CN",
+            placeholder: "请选择立面图..."
+        }).val(null).trigger("change");
+
+        $("#Choise_PJ").on("select2:select", function (e) {
+            var Pro_ID = $("#Choise_PJ").val();
+            $.get('/ExcelView/GetLMTData', { 'ProId': Pro_ID }, function (result) {
+                if (result.mess == "success") {
+                    $("#Choise_LMT").prop('disabled', false);
+                    $("#Choise_LMT").select2({
+                        data: result.data,
+                        language: "zh-CN",
+                        placeholder: "请选择立面图..."
+                    }).val(null).trigger("change");
+                } else {
+                    $("#Loading,#Save,#Clear,#Choise_LMT").prop('disabled', true);
+                    $("#Choise_LMT").select2({
+                        data: null,
+                        language: "zh-CN",
+                        placeholder: "请选择立面图..."
+                    }).val(null).trigger("change");
+                }
+            });
+        });
+
+        $("#Choise_LMT").on("select2:select", function (e) {
+            $("#Loading,#Save,#Clear").prop('disabled', false);
+        });
+    });
+
+    $('#main').resize(function () {
+        spread.refresh();
+    });
+
+    $('#Save').click(function () {
+        //加载状态
+        GetData();
+    });
+
+    $('#Loading').click(function () {
+        var Path = $("#Choise_LMT").val();
+        //加载json模板
+        $.getJSON("/ExcelView/GetTemplateJson?Code=" + Path,
+            function (template) {
+                if (template) {
+                    if (typeof (template) !== "object") {
+                        template = JSON.parse(template);
+                    }
+                    //导入模板
+                    spread.fromJSON(template);
+                }
+            });
+    });
+
+    function GetData()
+    {
+        var Code = $("#Choise_LMT").val();
+
+        var cellStyle1 = new spreadNS.Style();
+        cellStyle1.backColor = "#C4BD97";
+        cellStyle1.borderLeft = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle1.borderTop = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle1.borderRight = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle1.borderBottom = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        var cellStyle2 = new spreadNS.Style();
+        cellStyle2.backColor = "#538DD5";
+        cellStyle2.borderLeft = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle2.borderTop = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle2.borderRight = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        cellStyle2.borderBottom = new GC.Spread.Sheets.LineBorder("black", GC.Spread.Sheets.LineStyle.thin);
+        sheet = spread.getActiveSheet();
+        sheet.suspendPaint();
+        $.post('/ExcelView/GetProssData', { 'Code': Code }, function (result) {
+            $.each(result.data, function (i, n) {
+                if(n.TYPE == 1)
+                    sheet.setStyle(n.X, n.Y, cellStyle1, spreadNS.SheetArea.viewport);
+                else if (n.TYPE == 2)
+                    sheet.setStyle(n.X, n.Y, cellStyle2, spreadNS.SheetArea.viewport);
+            });
+        });
+        sheet.resumePaint();
+    }
+
+    function importFile(file) {
+        excelIo.open(file, function (json) {
+            var workbookObj = json;
+            spread.fromJSON(workbookObj);
+        }, function (e) {
+            alert(e.errorMessage);
+        });
+    }
+
+</script>
+
+

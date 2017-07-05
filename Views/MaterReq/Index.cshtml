@@ -1,0 +1,390 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<link href="~/Scripts/split/splitstyle.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary" >
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile" id="tree" style="height:720px">
+                <div class="split split-horizontal" id="one">
+                    <div>
+                        <ul id="treeDemo" class="ztree"
+                            style="-moz-user-select: none;margin-top: 10px;
+                    border: 1px solid #617775;
+                    background: #f0f6e4;
+                    width: 100%;
+                    height: 680px;
+                    overflow-y: scroll;
+                    overflow-x: auto;"></ul>
+                    </div>
+                </div>
+                <div class="split split-horizontal" id="two">
+                    <div style="width:100%">
+                        <table>
+                            <tr>
+                                <td width="100px">
+                                    <label class="control-label" id="TA_Label">状态</label>&nbsp;
+                                    <label class="control-label"><span id="txt_Status" style="color:red"></span></label>
+                                </td>
+                                <td width="90px" align="center">
+                                    <span style="font-size:14px">TA编号</span>
+                                </td>
+                                <td width="200px">
+                                    <input class="form-control input-sm" disabled="disabled" id="txt_TA_Code" type="text" placeholder="TA编号">
+                                </td>
+                                <td width="90px" align="center">
+                                    <span style="font-size:14px">TA描述</span>
+                                </td>
+                                <td width="200px">
+                                    <input class="form-control input-sm" disabled="disabled" id="txt_TA_Name" type="text" placeholder="TA描述">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="btn-group" style='width: 100%; margin-left:1px;margin-top:5px;margin-bottom:4px; '>
+                        <button class="btn btn-primary" type="button" id="btn_add">
+                            <span class="fa fa-plus"></span>&nbsp;添加
+                        </button>
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="Rows"><span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="P5"><i class="i"></i>&nbsp;5</a></li>
+                            <li><a href="#" id="P10"><i class="i"></i> 10</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" id="P30"><i class="i"></i> 20</a></li>
+                        </ul>
+
+                        <button class="btn btn-primary" type="button" id="btn_Save">
+                            <span class="fa fa-save"></span>&nbsp;保存
+                        </button>
+                        <button class="btn btn-primary " type="button" id="btn_Delete">
+                            <span class="fa fa-times"></span>&nbsp;删除
+                        </button>
+                        <button class="btn btn-primary " type="button" id="btn_Flag">
+                            <span class="fa fa-bookmark"></span>&nbsp;确认
+                        </button>
+                    </div>
+                    <!--<div><button id='Save' type="button" class="btn btn-block btn-info" style='width: 50px;'>保存</button></div>-->
+                    <div id='MianSpread' style='width: 100%; height: 630px;'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script> 
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script> 
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<!--ztree-->
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.exedit.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script src="~/Scripts/split/split.min.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var sheet;
+    var TA_ID;
+    var PJ_ID_;
+    var combo;
+    var dv1 = new spreadNS.DataValidation.createListValidator("单元,散件");
+    var dv2 = new spreadNS.DataValidation.createTextLengthValidator(;
+    combo = new spreadNS.CellTypes.ComboBox();
+    combo.items([
+    { text: "单元", value: "85670aa869f64023b2a247a6859258c6" },
+    { text: "散件", value: "f27e60df2bef435daa9b1a2db36ef2cf" }]);
+    combo.editorValueType(spreadNS.CellTypes.EditorValueType.value);
+    var colInfos = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'TA_ID', size: 20, visible: false },
+        { name: 'Pro_ID', size: 20, visible: false },
+        { name: 'TA_CODE', displayName: 'TA编号', size: 120, resizable: true, formatter: Text },
+        { name: 'BT_Code', displayName: 'BT编号', size: 80, visible: true, formatter: Text },
+        { name: 'BTType', displayName: 'BT类型', size: 80, visible: true, formatter: Text},
+        { name: 'Description_CN', displayName: 'BT中文描述', size: 140, formatter: Text },
+        { name: 'Description_EN', displayName: 'BT英文描述', size: 140, formatter: Text },
+        { name: 'Drawing', displayName: '图号', size: 100, resizable: true, formatter: Text },
+        { name: 'Dimension', displayName: '规格尺寸', size: 100, resizable: true, formatter: Text },
+        { name: 'Specification', displayName: '材质、型号', size: 100, resizable: true, formatter: Text },
+        { name: 'Qty', displayName: '数量', size: 60, resizable: false, formatter: Number },
+        { name: 'Units', displayName: '单位', size: 60, resizable: false, formatter: Text },
+        { name: 'ListNO', displayName: '细目号', size: 150, resizable: true, formatter: Text },
+        { name: 'Comments', displayName: '备注', size: 150, resizable: true, formatter: Text },
+        { name: 'TA_DES', displayName: 'TA描述', size: 120, resizable: false, formatter: Text }
+    ];
+    function setTitle() {
+        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = zTree.transformToArray(zTree.getNodes());
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            var n = nodes[i];
+            n.name += "——" + n.title;
+            zTree.updateNode(n);
+        }
+    }
+    $(function () {
+        Split(['#one', '#two'], {
+            sizes: [25, 75], minSize: 0
+        });
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+        $("#Choise_PJ").on("select2:select", function (e) {
+            PJ_ID_ = $("#Choise_PJ").val();
+            $.get('/CNYD_STRUCT_TREE/GetTA_Struct', { 'PJ_ID_': PJ_ID_ }, function (result) {
+                if (result.data.length > 0) {
+                    var setting = {
+                        view: { selectedMulti: false }
+                        , data: { simpleData: { enable: true }, key: { title: "title" } }
+                        , onClick: zTreeOnClick
+                        , callback: { onClick: zTreeOnClick }
+                    };
+                    $.fn.zTree.init($("#treeDemo"), setting, result.data);
+                    setTitle();
+                }
+            });
+        });
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        excelIo = new GC.Spread.Excel.IO();
+        sheet = spread.getActiveSheet();
+        sheet.setColumnCount(11, GC.Spread.Sheets.SheetArea.viewport);
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+        $('#P5').click(function () {
+            for (var i = 0; i < 5; i++)
+            {
+                $('#btn_add').trigger('click');
+            }
+        });
+        $('#P10').click(function () {
+            for (var i = 0; i < 10; i++) {
+                $('#btn_add').trigger('click');
+            }
+        });
+        $('#P20').click(function () {
+            for (var i = 0; i < 20; i++) {
+                $('#btn_add').trigger('click');
+            }
+        });
+
+    });
+    //添加行(10)
+    $('#btn_add').click(function () {
+        if (TA_ID != null)
+        {
+            var row = sheet.getRowCount();
+            sheet.suspendPaint();
+            sheet.addRows(row, 1);
+            sheet.setValue(row, 1, TA_ID);
+            sheet.setValue(row, 2, PJ_ID_);
+            sheet.setValue(row, 3, $('#txt_TA_Code').val());
+            sheet.setValue(row, 11, 0);
+            sheet.setValue(row, 15, $('#txt_TA_Name').val());
+            sheet.setValue(row, 5, "单元");
+            sheet.setDataValidator(row, 5, dv1);
+            for(var i = 0 ; i<sheet.getRowCount();i++)
+            {
+                var b = sheet.isValid(i, 5, sheet.getValue(i, 5));
+                if (!b)
+                {
+                    alert(sheet.getValue(i, 5));
+                }
+            }
+            //BT号文本字段
+            sheet.setFormatter(sheet.getRowCount() - 1, 4, '@@');
+            //获取行数
+            var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+            //设置筛选
+            var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 12));
+            sheet.rowFilter(filter);
+            sheet.resumePaint();
+        }
+    });
+    //保存--脏数据
+    $('#btn_Save').click(function () {
+        var dis = false; var space = false;
+        var cellStyle = new spreadNS.Style();
+        cellStyle.backColor = null;
+        var CheckColumnindex = 4;
+        sheet.suspendPaint();
+        //BT号手工校验
+        for (var i = 1; i < sheet.getRowCount() ; i++)
+        {
+            sheet.setStyle(i, CheckColumnindex, cellStyle, GC.Spread.Sheets.SheetArea.viewport);
+        }
+        cellStyle = new spreadNS.Style();
+        cellStyle.backColor = "green";
+        for (var i = 1; i < sheet.getRowCount(); i++) {
+            if ($.trim(sheet.getValue(i, CheckColumnindex)) == '' || sheet.getValue(i, CheckColumnindex) == null)
+            {
+                space = true;
+                break;
+            }
+            for (var j = i+1; j < sheet.getRowCount(); j++) {
+                if ($.trim(sheet.getValue(i, CheckColumnindex)) == $.trim(sheet.getValue(j, CheckColumnindex)))
+                {
+                    sheet.setStyle(j, CheckColumnindex, cellStyle, GC.Spread.Sheets.SheetArea.viewport);
+                    sheet.setStyle(i, CheckColumnindex, cellStyle, GC.Spread.Sheets.SheetArea.viewport);
+                    dis = true;
+                }
+            }
+        }
+        sheet.resumePaint();
+        if (dis) {
+            alert('BT编号重复！请修改后再保存。');
+            return;
+        }
+        if (space) {
+            alert('请删除多余行。');
+            return;
+        }
+        //BT类型数据校验
+        for (var i = 0 ; i < sheet.getRowCount() ; i++) {
+            var b = sheet.isValid(i, 5, sheet.getValue(i, 5));
+            if (!b) {
+                alert('BT类型填写错误。');
+                return;
+            }
+        }
+        if (TA_ID != null)
+        {
+            var Addrows = sheet.getInsertRows();
+            var Additems = JSON.stringify(Addrows.map(function (row) { return row.item; }));
+            var Changerows = sheet.getDirtyRows();
+            var Changeitems = JSON.stringify(Changerows.map(function (row) { return row.item; }));
+            var DeletedRows = sheet.getDeletedRows();
+            var Deleteditems = JSON.stringify(DeletedRows.map(function (row) { return row.originalItem; }));
+            $.post("/MaterReq/Save", { 'AddJson': Additems, 'ChangeJson': Changeitems, 'DeleteJson': Deleteditems },
+                function (rel) {
+                    if (rel.mess == 'Success') {
+                        $.post("/MaterReq/GetData", { 'TA_ID': TA_ID }, function (result) {
+                            sheet.autoGenerateColumns = false;
+                            sheet.bindColumns(colInfos);
+                            sheet.setDataSource(result.Data);
+                            Filter(sheet);
+                            alert('保存成功！');
+                        });
+                    } else {
+                        alert('保存失败！');
+                    }
+                });
+        }
+    });
+    //删除行
+    $('#btn_Delete').click(function () {
+        if (TA_ID != null)
+        {
+            sheet.suspendPaint();
+            sheet.deleteRows(sheet.getActiveRowIndex(), 1); //行与列&选择单元格
+            sheet.resumePaint();
+        }
+    });
+    //确认
+    $('#btn_Flag').click(function () {
+        if (sheet.getRowCount() == 0)
+        {
+            alert('TA下没有维护物料！');
+            return;
+        }
+        if (TA_ID != null)
+        {
+            $.post('/MaterReq/Flag', { 'TA_ID': TA_ID }, function (rel) {
+                if (rel.MES == 'Success')
+                    alert('确认成功！');
+                $('#btn_Flag,#btn_add,#btn_Save,#btn_Delete,#Rows').prop("disabled", true);
+                    $('#txt_Status').text('完成');
+            });
+        }
+    });
+    var setting = {
+        view: { selectedMulti: false },
+        data: { simpleData: { enable: true } },
+        onClick: zTreeOnClick,
+	    callback: { onClick: zTreeOnClick }
+    };
+    //点击树节点
+    function zTreeOnClick(event, treeId, treeNode) {
+        TA_ID = treeNode.id;
+        sheet = spread.getActiveSheet();
+        $.post("/MaterReq/GetData", { 'TA_ID': treeNode.id }, function (result) {
+            if (result.Data.length > 0) {
+                $('#txt_TA_Code').val(treeNode.title);
+                $('#txt_TA_Name').val(treeNode.name.substring(0, treeNode.name.indexOf('——')));
+                if (result.Flag) {
+                    $('#btn_Flag,#btn_add,#btn_Save,#btn_Delete,#Rows').prop("disabled", true);
+                    $('#txt_Status').text('完成');
+                } else
+                {
+                    $('#btn_Flag,#btn_add,#btn_Save,#btn_Delete,#Rows').prop("disabled", false);
+                    $('#txt_Status').text('未完成');
+                }
+            }
+            else {
+                $('#txt_TA_Code').val(treeNode.title);
+                $('#txt_TA_Name').val(treeNode.name.substring(0, treeNode.name.indexOf('——')));
+                if (result.Flag) { 
+                    $('#btn_Flag,#btn_add,#btn_Save,#btn_Delete,#Rows').prop("disabled", true);
+                    $('#txt_Status').text('完成');
+                } else {
+                    $('#btn_Flag,#btn_add,#btn_Save,#btn_Delete,#Rows').prop("disabled", false);
+                    $('#txt_Status').text('未完成');
+                }
+            }
+            sheet.autoGenerateColumns = false;
+            sheet.bindColumns(colInfos);
+            sheet.setDataSource(result.Data);
+            Filter(sheet);
+            spread.options.highlightInvalidData = true;
+            dv1.showErrorMessage(true);
+            dv1.inputTitle("请选择一个类型:");
+            dv1.inputMessage("单元,散件");
+            for (var i = 0; i < sheet.getRowCount() ; i++) {
+                sheet.setDataValidator(i, 5, dv1);
+            }
+        });
+    }
+
+    function Filter(sheet) {
+        //获取行数
+        var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+        //设置筛选
+        var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 11));
+        sheet.rowFilter(filter);
+    }
+    $('#treeview4').treeview({
+        color: "#428bca",
+        data: defaultData
+    });
+
+</script>

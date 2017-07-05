@@ -1,0 +1,522 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/LTE-Control/CssCheck/style.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/bootstrap-table/bootstrap-table.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/bootstrapvalidator/bootstrapValidator.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/toastr/toastr.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Datepicker/datepicker3.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<h3><i>工程信息:</i></h3>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+
+            <div class="box-body box-profile">
+                <div id="toolbar" class="btn-group">
+                    <button id="btn_add" type="button" class="btn btn-default">
+                        <span class="fa fa-plus" aria-hidden="true"></span> 新增
+                    </button>
+                    <button id="btn_edit" type="button" class="btn btn-default">
+                        <span class="fa fa-pencil" aria-hidden="true"></span> 修改
+                    </button>
+                    <button id="btn_delete" type="button" class="btn btn-default">
+                        <span class="fa fa-times" aria-hidden="true"></span> 删除
+                    </button>
+                </div>
+
+                <table id="tb_departments"></table>
+
+                <!-- 模态框（Modal） -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">新增</h4>
+                            </div>
+                            <form id="form" name="form" class="form-horizontal" action="#" method="post">
+                                <div class="modal-body">
+                                    <div class="box-body">
+                                        <div class="nav-tabs-custom">
+                                            <ul class="nav nav-tabs">
+                                                <li class="active"><a href="#tab_1" data-toggle="tab">必填信息</a></li>
+                                                <li><a href="#tab_2" data-toggle="tab">其他信息</a></li>
+                                                <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="tab_1">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">工程编号</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_NUMBER_" name="PJ_NUMBER_" placeholder="工程编号">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">英文名称</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_NAME_YE_" name="PJ_NAME_YE_" placeholder="英文名称">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">中文名称</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_NAME_CN_" name="PJ_NAME_CN_" placeholder="中文名称">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">国家</label>
+                                                        <div class="col-sm-8">
+                                                            @*<input class="form-control" id="txt_PJ_COUNTRY_" name="PJ_COUNTRY_" placeholder="国家">*@
+                                                            <select class="form-control js-example-basic-single" style="width : 100%" id="PJ_COUNTRY">
+                                                                <optgroup label="亚洲">
+                                                                    <option value="1">中国</option>
+                                                                    <option value="2">日本</option>
+                                                                    <option value="3">韩国</option>
+                                                                    <option value="4">新加坡</option>
+                                                                </optgroup>
+                                                                <optgroup label="欧洲">
+                                                                    <option value="5">英国</option>
+                                                                    <option value="6">法国</option>
+                                                                    <option value="7">意大利</option>
+                                                                    <option value="8">德国</option>
+                                                                </optgroup>
+                                                                <optgroup label="澳洲">
+                                                                    <option value="9">澳大利亚</option>
+                                                                </optgroup>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">类型</label>
+                                                        <div class="col-sm-8">
+                                                            @*<input class="form-control" id="txt_PJ_TYPE_" name="PJ_TYPE_" placeholder="类型">*@
+                                                            <select class="form-control js-example-basic-single" style="width : 100%" id="PJ_TYPE">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">公司</label>
+                                                        <div class="col-sm-8">
+                                                            @*<input class="form-control" id="txt_PJ_TYPE_" name="PJ_TYPE_" placeholder="类型">*@
+                                                            <select class="form-control js-example-basic-single" style="width : 100%" id="COMPANY"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">状态</label>
+                                                        <div class="col-sm-8">
+                                                            <select class="form-control js-example-basic-single" style="width : 100%" id="PJ_STATE"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">启用</label>
+                                                        <div class="col-sm-8">
+                                                            <div class="checkbox">
+                                                                <label>
+                                                                    <input id="chk_RECLOCK_" type="checkbox" checked="checked" name="vehicle" value="1">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- /.tab-pane -->
+                                                <div class="tab-pane" id="tab_2">
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">总包</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_MAINCONTRACTOR_" name="PJ_MAINCONTRACTOR_" placeholder="总包">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">建筑师</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_ARCHITECT_" name="PJ_ARCHITECT_" placeholder="建筑师">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">业主</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_RECOWNER_" name="RECOWNER_" placeholder="业主">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">开始时间</label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group date">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input class="form-control pull-right" id="SSDATE" type="text">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">结束时间</label>
+                                                        <div class="col-sm-8">
+                                                            <div class="input-group date">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input class="form-control pull-right" id="FFDATE" type="text">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-sm-2 control-label">备注</label>
+                                                        <div class="col-sm-8">
+                                                            <input class="form-control" id="txt_PJ_COMMENTS_" name="PJ_COMMENTS_" placeholder="备注">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /.tab-content -->
+                                        </div>
+
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" id="btn_closefrom" data-dismiss="modal"><span class="fa fa-close" aria-hidden="true"></span>&nbsp;关闭</button>
+                                    <button type="button" class="btn btn-primary" id="btn_submit"><span class="fa fa-save" aria-hidden="true"></span>&nbsp;保存</button>
+                                </div>
+                            </form>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/dist/app.min.js"></script>
+    <script src="~/Scripts/Datepicker/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/Datepicker/bootstrap-datepicker.zh-CN.js"></script>
+    <script src="~/Scripts/bootstrap-table/bootstrap-table.js"></script>
+    <script src="~/Scripts/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+    <script src="~/Scripts/toastr/toastr.min.js"></script>
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script src="~/Scripts/bootstrapvalidator/bootstrapValidator.min.js"></script>
+    <script src="~/Scripts/select2/select2.min.js"></script>
+    <script src="~/Scripts/select2/zh-CN.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //1.初始化Table
+            var oTable = new TableInit();
+            oTable.Init();
+            //select2在modal中可用
+            $.fn.modal.Constructor.prototype.enforceFocus = function () { };
+
+            $('#form').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'fa fa-check',
+                    invalid: 'fa fa-remove',
+                    validating: 'fa fa-refresh'
+                },
+                excluded: [':disabled'],
+                fields: {
+                    PJ_NUMBER_: {
+                        message: '工程编号无效!',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空!'
+                            },
+                            stringLength: {
+                                min: 10,
+                                max: 12,
+                                message: '字符长度10-12!'
+                            }
+                        }
+                    },
+                    PJ_NAME_YE_: {
+                        message: '英文名称!',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    },
+                    PJ_NAME_CN_: {
+                        message: '中文名称!',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    },
+                    PJ_COUNTRY_: {
+                        message: '国家!',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            }
+                        }
+                    }
+                }
+            });
+            //2.初始化Button的点击事件
+            var oButtonInit = new ButtonInit();
+            oButtonInit.Init();
+            //初始化modal中控件
+            FromElnInt();
+        });
+
+        $("#btn_closefrom").click(function (e) {
+            $('#form').data('bootstrapValidator').resetForm(true);
+        });
+
+        var TableInit = function () {
+            var oTableInit = new Object();
+            //初始化Table
+            oTableInit.Init = function () {
+                $('#tb_departments').bootstrapTable({
+                    url: '/CNYD_B_PROJECT/GetProjectInfo',  //请求后台的URL（*）
+                    method: 'post',                     //请求方式（*）
+                    toolbar: '#toolbar',                //工具按钮用哪个容器
+                    striped: true,                      //是否显示行间隔色
+                    cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    pagination: true,                   //是否显示分页（*）
+                    sortable: false,                    //是否启用排序
+                    sortOrder: "asc",                   //排序方式
+                    queryParams: oTableInit.queryParams,//传递参数（*）
+                    sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                    pageNumber: 1,                      //初始化加载第一页，默认第一页
+                    pageSize: 50,                       //每页的记录行数（*）
+                    pageList: [50, 100],                //可供选择的每页的行数（*）
+                    search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+                    strictSearch: true,
+                    showColumns: true,                  //是否显示所有的列
+                    showRefresh: true,                  //是否显示刷新按钮
+                    minimumCountColumns: 2,             //最少允许的列数
+                    clickToSelect: true,                //是否启用点击选中行
+                    height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    uniqueId: "ID_",                    //每一行的唯一标识，一般为主键列
+                    showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+                    cardView: false,                    //是否显示详细视图
+                    detailView: false,                  //是否显示父子表
+                    columns: [
+                    { title: '全选', checkbox: true },
+                    { field: 'PJ_NUMBER_', title: '工程编号', sortable: true },
+                    { field: 'PJ_NAME_YE_', title: '英文名称', sortable: true },
+                    { field: 'PJ_NAME_CN_', title: '中文名称', sortable: true },
+                    { field: 'PJ_COMMENTS_', title: '备注', sortable: true },
+                    { field: 'PJ_COMMENTS_', title: '备注', sortable: true },
+                    { field: 'PJ_MAINCONTRACTOR_', title: '总包', sortable: true },
+                    { field: 'PJ_ARCHITECT_', title: '建筑师', sortable: true },
+                    { field: 'PJ_COUNTRY_', title: '国家', sortable: true },
+                    { field: 'PJ_TYPE_', title: '类型', sortable: true },
+                    { field: 'PJ_STATUS_', title: '状态', sortable: true },
+                    { field: 'RECAUTONR_', title: 'RECAUTONR_', sortable: true, visible:false},
+                    { field: 'RECCREATED_', title: 'RECCREATED_', sortable: true, visible: false },
+                    { field: 'RECCREATEDBY_', title: 'RECCREATEDBY_', sortable: true, visible:false },
+                    { field: 'RECCREATEDBYUSRID_', title: 'RECCREATEDBYUSRID_', sortable: true, visible: false },
+                    { field: 'RECLASTMODIFIED_', title: 'RECLASTMODIFIED_', sortable: true, visible: false },
+                    { field: 'RECLASTMODIFIEDBY_', title: 'RECLASTMODIFIEDBY_', sortable: true, visible: false },  
+                    { field: 'RECLASTMODIFIEDBYUSRID_', title: 'RECLASTMODIFIEDBYUSRID_', sortable: true, visible: false },
+                    { field: 'RECOWNER_', title: '业主', sortable: true },
+                    { field: 'RECLOCK_', title: '是否可用', sortable: true, visible: false },
+                    { field: 'RECCHANGES_', title: 'RECCHANGES_', sortable: true, visible: false },
+                    { field: 'RECDELETED_', title: 'RECDELETED_', sortable: true, visible: false },
+                    { field: 'PJ_BACKENDFILE_', title: 'PJ_BACKENDFILE_', sortable: true, visible: false },
+                    { field: 'PJ_PROJECTPATH_', title: 'PJ_PROJECTPATH_', sortable: true, visible: false },
+                    { field: 'SAP_COMPANY_', title: 'SAP_COMPANY_', sortable: true, visible: false },
+                    { field: 'SAP_DEPARTMENT_', title: 'SAP_DEPARTMENT_', sortable: true, visible: false },
+                    { field: 'SAP_PRCTR_', title: 'SAP_PRCTR_', sortable: true, visible: false },
+                    { field: 'SAP_PSPNR_', title: 'SAP_PSPNR_', sortable: true, visible: false },
+                    { field: 'SSDATE_', title: 'SSDATE_', sortable: true, visible: false },
+                    { field: 'FFDATE_', title: 'FFDATE_', sortable: true, visible: false }
+                    ]
+                });
+            };
+            //得到查询的参数
+            oTableInit.queryParams = function (params) {
+                var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+                    limit: params.limit,   //页面大小
+                    offset: params.offset,  //页码
+                    departmentname: $("#txt_search_departmentname").val(),
+                    statu: $("#txt_search_statu").val()
+                };
+                return temp;
+            };
+            return oTableInit;
+        };
+
+        var ButtonInit = function () {
+            var oInit = new Object();
+            var postdata = {};
+            oInit.Init = function () {
+                $("#btn_add").click(function () {
+                    $('#form').data('bootstrapValidator').resetForm(true);
+                    $("#chk_Enabled").prop("checked", true);
+                    $("#myModalLabel").text("新增");
+                    $("#myModal").find(".form-control").val("");
+                    $('#myModal').modal();
+                    postdata.ID_ = "-1";
+                });
+
+                $("#btn_edit").click(function () {
+                    $('#form').data('bootstrapValidator').resetForm(true);
+                    var arrselections = $("#tb_departments").bootstrapTable('getSelections');
+                    if (arrselections.length > 1) {
+                        toastr.warning('只能选择一行进行编辑');
+                        return;
+                    }
+                    if (arrselections.length <= 0) {
+                        toastr.warning('请选择有效数据');
+                        return;
+                    }
+                    $("#myModalLabel").text("编辑");
+                    $("#txt_Name").val(arrselections[0].Name);
+                    $("#txt_Code").val(arrselections[0].Code);
+                    $("#txt_Icon").val(arrselections[0].Icon);
+                    $("#txt_SortOrder").val(arrselections[0].SortOrder);
+                    $("#chk_Enabled").prop("checked", arrselections[0].Enabled);
+
+                    postdata.Id = arrselections[0].Id;
+                    $('#myModal').modal();
+                });
+
+                $("#btn_delete").click(function () {
+                    var arrselections = $("#tb_departments").bootstrapTable('getSelections');
+                    if (arrselections.length <= 0) {
+                        toastr.warning('请选择有效数据');
+                        return;
+                    }
+                    bootbox.confirm({
+                        title: "删除",
+                        message: "确认要删除选择的数据吗？",
+                        buttons: {
+                            confirm: {
+                                label: '是',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: '否',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                $.ajax({
+                                    type: "post",
+                                    url: "/CNYD_B_PROJECT/Del",
+                                    data: { "data": JSON.stringify(arrselections) },
+                                    success: function (data, status) {
+                                        if (status == "success") {
+                                            $('#myModal').modal('hide');
+                                            toastr.success('删除数据成功.');
+                                            $("#tb_departments").bootstrapTable('refresh');
+                                        } else {
+                                            $('#myModal').modal('hide');
+                                            toastr.success('删除失败(1).');
+                                        }
+                                    },
+                                    error: function () { toastr.error('删除失败(2).'); },
+                                    complete: function () { }
+                                });
+                            }
+                        }
+                    });
+
+                });
+
+                $("#btn_submit").click(function () {
+                    $('#form').data('bootstrapValidator').validate();
+                    var isVal = $("#form").data('bootstrapValidator').isValid();
+                    if (!isVal) { return; }
+                    postdata.PJ_NUMBER_ = $("#txt_PJ_NUMBER_").val();
+                    postdata.PJ_NAME_YE_ = $("#txt_PJ_NAME_YE_").val();
+                    postdata.PJ_NAME_CN_ = $("#txt_PJ_NAME_CN_").val();
+                    postdata.PJ_COMMENTS_ = $("#txt_PJ_COMMENTS_").val();
+                    postdata.PJ_MAINCONTRACTOR_ = $("#txt_PJ_MAINCONTRACTOR_").val();
+                    postdata.PJ_ARCHITECT_ = $("#txt_PJ_ARCHITECT_").val();
+                    postdata.PJ_COUNTRY_ = $("#PJ_COUNTRY").find("option:selected").text(); //$("#txt_PJ_COUNTRY_").val();
+                    postdata.PJ_TYPE_ = $("#PJ_TYPE").val();
+                    postdata.PJ_STATUS_ = $("#PJ_STATE").val();
+                    postdata.RECOWNER_ = $("#txt_RECOWNER_").val();
+                    postdata.SSDATE_ = $("#SSDATE_").val();
+                    postdata.FFDATE_ = $("#FFDATE_").val();
+                    postdata.RECLOCK_ = !$('#chk_Enabled').prop('checked');
+                    $.ajax({
+                        type: "post",
+                        url: "/CNYD_B_PROJECT/GetEdit",
+                        data: { "data": JSON.stringify(postdata) },
+                        success: function (data, status) {
+                            if (status == "success") {
+                                $('#myModal').modal('hide');
+                                toastr.success('提交数据成功');
+                                $("#tb_departments").bootstrapTable('refresh');
+                            }
+                        },
+                        error: function () { toastr.error('提交失败'); },
+                        complete: function () { }
+                    });
+                });
+                $("#btn_query").click(function () {
+                    $("#tb_departments").bootstrapTable('refresh');
+                });
+            };
+
+            return oInit;
+        };
+
+        function FromElnInt() {
+
+            $.get('/CNYD_B_PROJECT/GetProType', {}, function (result) {
+                $("#PJ_TYPE").select2({
+                    data: result.data,
+                    language: "zh-CN",
+                    placeholder: "请选择类型...",
+                    allowClear: true
+                }).val(null).trigger("change");
+            });
+
+            $.get('/CNYD_B_PROJECT/GetProState', {}, function (result) {
+                $("#PJ_STATE").select2({
+                    data: result.data,
+                    language: "zh-CN",
+                    placeholder: "请选择状态...",
+                    allowClear: true
+                }).val(null).trigger("change");
+            });
+
+            $.get('/CNYD_B_PROJECT/GetCompany', {}, function (result) {
+                $("#COMPANY").select2({
+                    data: result.data,
+                    language: "zh-CN",
+                    placeholder: "请选择状态...",
+                    allowClear: true
+                }).val(null).trigger("change");
+            });
+
+            $("#PJ_COUNTRY").select2({
+                language: "zh-CN",
+                placeholder: "请选择国家...",
+                allowClear: true
+            }).val(null).trigger("change");
+
+            $("#SSDATE").datepicker({
+                language: "zh-CN",
+                autoclose: true,//选中之后自动隐藏日期选择框 
+                clearBtn: true,//清除按钮
+                todayBtn: true,//今日按钮
+                format: "yyyy-mm-dd"//日期格式
+            });
+
+            $("#FFDATE").datepicker({
+                language: "zh-CN",
+                autoclose: true,//选中之后自动隐藏日期选择框
+                clearBtn: true,//清除按钮
+                todayBtn: true,//今日按钮
+                format: "yyyy-mm-dd"//日期格式
+            });
+        }
+    </script>

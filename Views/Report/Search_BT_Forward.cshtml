@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <h4 class="box-title" style="float:left;margin-left:10px;margin-top:5px">BT号：&nbsp;&nbsp;</h4>
+                <input style="width:200px;float:left" class="form-control input-sm" type="text" placeholder="BT号" id="txt_BT">
+                <button class="btn btn-primary" type="button" id="Sreach" style="margin-left:10px;float:left">
+                    <span class="fa fa-search"></span>&nbsp;查询
+                </button>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile">
+                <div style="float:left; margin-left:1px; width:calc(100% - 10px); margin-top:8px;">
+                    <div id='MianSpread' style='width: 100%; height: 680px;'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+<script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<!--ztree-->
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.exedit.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script type="text/javascript">
+    var spreadNS = GC.Spread.Sheets;
+    var spread;
+    var sheet;
+    var colInfos = [
+        { name: 'ID', size: 20, visible: false },
+        { name: 'TA_ID', size: 20, visible: false },
+        { name: 'Pro_ID', size: 20, visible: false },
+        { name: 'BT_Code', displayName: 'BT编号', size: 80, visible: true, formatter: Text },
+        { name: 'Description_EN', displayName: 'BT英文描述', size: 100, formatter: Text },
+        { name: 'Description_CN', displayName: 'BT中文描述', size: 100, formatter: Text },
+        { name: 'Units', displayName: '单位', size: 60, resizable: false, formatter: Text },
+        { name: 'Qty', displayName: '数量', size: 60, resizable: false, formatter: Number },
+        { name: 'Drawing', displayName: '图号', size: 80, resizable: true, formatter: Text },
+        { name: 'Comments', displayName: '备注', size: 100, resizable: true, formatter: Text },
+        { name: 'Dimension', displayName: '规格尺寸', size: 100, resizable: true, formatter: Text },
+        { name: 'StillageDate', displayName: '装入包装箱时间', size: 80, resizable: true, formatter: 'yyyy-M-d' },
+        { name: 'StillageCode', displayName: '包装箱号', size: 80, resizable: true, formatter: Text },
+        { name: 'Weight', displayName: '包装箱重量', size: 80, resizable: true, formatter: Text },
+        { name: 'Length', displayName: '包装箱长', size: 80, resizable: true, formatter: Text },
+        { name: 'Width', displayName: '包装箱宽', size: 80, resizable: true, formatter: Text },
+        { name: 'Height', displayName: '包装箱高', size: 80, resizable: true, formatter: Text },
+        { name: 'StillType', displayName: '包装类型', size: 80, resizable: true, formatter: Text },
+        { name: 'ShipDate', displayName: '装入集装箱时间', size: 80, resizable: true, formatter: 'yyyy-M-d' },
+        { name: 'ForwardDate', displayName: '发出时间', size: 80, resizable: true, formatter: 'yyyy-M-d' },
+        { name: 'ShipCode', displayName: '集装箱号', size: 100, resizable: true, formatter: Text },
+        { name: 'PC', displayName: '批次号', size: 100, resizable: true, formatter: Text }
+    ];
+    $(function () {
+        spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+        sheet = spread.getActiveSheet();
+        sheet.setColumnCount(14, GC.Spread.Sheets.SheetArea.viewport);
+
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });
+
+        $('#main_box').resize(function () {
+            spread.refresh();
+        });
+
+    });
+    $('#Sreach').click(function () {
+        $.post("/Report/GetBTData", { 'BT_Code': $('#txt_BT').val().trim(), 'Pro_ID': $("#Choise_PJ").val() }, function (result) {
+            if (result.Data.length > 0) {
+                sheet.autoGenerateColumns = false;
+                sheet.bindColumns(colInfos);
+                sheet.setDataSource(result.Data);
+                Filter(sheet);
+            }
+        });
+    });
+	function Filter(sheet)
+	{
+	    //获取行数
+	    var count = sheet.getRowCount(GC.Spread.Sheets.SheetArea.viewport);
+	    //设置筛选
+	    var filter = new spreadNS.Filter.HideRowFilter(new spreadNS.Range(0, 0, count, 17));
+	    sheet.rowFilter(filter);
+	}
+
+	$('#treeview4').treeview({
+		color: "#428bca",
+		data: defaultData
+	});
+
+</script>

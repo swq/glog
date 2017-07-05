@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "ChagePWD";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/LTE-Control/CssCheck/style.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/bootstrapvalidator/bootstrapValidator.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/toastr/toastr.min.css")" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i>修改密码:</i></h3>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+            <form class="form-horizontal" action="#">
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-3 control-label">旧密码:</label>
+                        <div class="col-sm-7">
+                            <input class="form-control" id="Old_Pwd" placeholder="旧密码" type="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-3 control-label">新密码:</label>
+                        <div class="col-sm-7">
+                            <input type="password" class="form-control" name="password" placeholder="新密码" id="New_Pwd"
+                                   required data-bv-notempty-message="密码不能为空."
+                                   data-bv-identical="true" data-bv-identical-field="confirmPassword" data-bv-identical-message="密码和它的确认是不一样的." />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-3 control-label">重新输入新密码:</label>
+                        <div class="col-sm-7">
+                            <input type="password" class="form-control" name="confirmPassword" placeholder="重新输入新密码"
+                                   required data-bv-notempty-message="确认密码不能为空."
+                                   data-bv-identical="true" data-bv-identical-field="password" data-bv-identical-message="密码和它的确认是不一样的." />
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <button type="button" class="btn btn-default" id="btn_refresh"><span class="fa fa-refresh"></span>&nbsp;重置</button>
+                    <button type="button" class="btn btn-primary" id="btn_submit"><span class="fa fa-save"></span>&nbsp;保存</button>
+                </div>
+                <!-- /.box-footer -->
+            </form>
+        </div>
+    </div>
+</div>
+@section script{
+    <script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/dist/app.min.js"></script>
+    <script src="~/Content/LTE-Control/CssCheck/modernizr.js"></script>
+    <script src="~/Scripts/toastr/toastr.min.js"></script>
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script src="~/Scripts/bootstrapvalidator/bootstrapValidator.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('form').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'fa fa-check',
+                    invalid: 'fa fa-remove',
+                    validating: 'fa fa-refresh'
+                },
+                excluded: [':disabled']
+            });
+
+            $('#btn_refresh').click(function (e) {
+                $('form').data('bootstrapValidator').resetForm(true);
+            });
+
+            $('#btn_submit').click(function (e) {
+                var postdata = {};
+
+                //$('form').data('bootstrapValidator').validate();
+                //var isVal = $("#form").data('bootstrapValidator').isValid();
+                //if (!isVal) { return; }
+
+                var Old_Pwd = $("#Old_Pwd").val();
+                var New_Pwd = $("#New_Pwd").val();
+
+                $.ajax({
+                    type: "post",
+                    url: "/System/CheckPwd",
+                    //data: { "data": JSON.stringify(postdata) },
+                    data: { "Old_Pwd": Old_Pwd, "New_Pwd": New_Pwd },
+                    success: function (data, status) {
+                        if (status == "success") {
+                            $('#myModal').modal('hide');
+                            toastr.success('提交数据成功');
+                            $("#tb_departments").bootstrapTable('refresh');
+                        }
+                    },
+                    error: function () {
+                        toastr.error('提交失败');
+                    },
+                    complete: function () {
+
+                    }
+                });
+            });
+        });
+    </script>
+}

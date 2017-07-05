@@ -1,0 +1,54 @@
+﻿
+        .example-1 {
+            height: 650px;
+            /*border: 1px solid #ddd;*/
+            /*border-radius: 14px;*/
+        }
+        
+        #one, #two {
+            padding: 5px;
+        }
+
+        #one p {
+            padding: 0;
+        }
+
+
+        .split p {
+            padding: 20px;
+        }
+
+        .split {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .gutter {
+            background-color: #eee;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            cursor: move;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
+        }
+
+            .gutter:active {
+                cursor: -moz-grabbing;
+                cursor: -webkit-grabbing;
+            }
+
+            .gutter.gutter-horizontal {
+                background-image: url(../../Content/img/vertical.png);
+            }
+
+            .gutter.gutter-vertical {
+                /*background-image: url('Content/img/horizontal.png');*/
+            }
+
+            .split.split-horizontal, .gutter.gutter-horizontal {
+                height: 100%;
+                float: left;
+            }

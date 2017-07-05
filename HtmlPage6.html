@@ -1,0 +1,123 @@
+﻿<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sss</title>
+
+    <style>
+        .example-1 {
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+        }
+        #one, #two {
+            padding: 20px;
+        }
+
+        #one p {
+            padding: 0;
+        }
+
+        .example-4, .example-5 {
+            height: 400px;
+        }
+
+        .split p {
+            padding: 20px;
+        }
+
+        .split {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .gutter {
+            background-color: #eee;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            cursor: move;
+            cursor: -moz-grab;
+            cursor: -webkit-grab;
+        }
+        .gutter:active {
+            cursor: -moz-grabbing;
+            cursor: -webkit-grabbing;
+        }
+
+        .gutter.gutter-horizontal {
+            background-image: url('Content/img/vertical.png');
+        }
+
+        .gutter.gutter-vertical {
+            background-image: url('Content/img/horizontal.png');
+        }
+
+        .split.split-horizontal, .gutter.gutter-horizontal {
+            height: 100%;
+            float: left;
+        }
+
+    </style>
+
+</head>
+<body>
+    <article class="htmleaf-container">
+        <a href="index.html" class="current">DEMO1</a>
+        <a href="index2.html">DEMO2</a>
+        <!--<div class="container">-->
+            <div class="row example-1">
+                <div id="one" class="split split-horizontal">
+                    <p>Split.js is a lightweight, unopinionated utility for creating adjustable split views or panes.</p>
+                    <p>
+                        No dependencies or markup required, just two or more elements with a common parent.
+                    </p>
+                    <p>
+                        Views can be split horizontally or vertically, with draggable gutters inserted between every two elements.
+                    </p>
+                </div>
+                <div id="two" class="split split-horizontal">
+                    <h5>Documentation</h5>
+                    <hr>
+                    <pre><code>Split(&lt;selector[]&gt; selectors, &lt;options&gt; options?)</code></pre>
+                    <table class="u-full-width">
+                        <thead>
+                            <tr>
+                                <th>Options</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>sizes</td>
+                                <td>Array of numbers</td>
+                                <td></td>
+                                <td>Initial sizes of each element in percents.</td>
+                            </tr>
+                            <tr>
+                                <td>minSize</td>
+                                <td>Number or array</td>
+                                <td>100</td>
+                                <td>Minimum size of each element.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        <!--</div>-->
+    </article>
+
+    <script src="Scripts/split/split.min.js"></script>
+    <script>
+
+
+    </script>
+</body>
+</html>

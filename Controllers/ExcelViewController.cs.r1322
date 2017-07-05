@@ -1,0 +1,103 @@
+﻿using gLog_FrontEnd.Common;
+using gLog_FrontEnd.Filters;
+using gLog_FrontEnd.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Script.Serialization;
+
+namespace gLog_FrontEnd.Controllers
+{
+    public class ExcelViewController : Controller
+    {
+        private gLog_FrontEndContext db = new gLog_FrontEndContext();
+        //
+        // GET: /Module/
+        [AdminLayout]
+        public ActionResult Index()
+        {
+            ViewBag.Guid = Guid.NewGuid().ToString("N");
+            return View();
+        }
+
+        public JsonResult Save(string HeadData, string Celldata,string ExcelJson)
+        {
+            JavaScriptSerializer js = new JavaScriptSerializer();
+            try
+            {
+                var Datas = js.Deserialize<List<T_ViewCelldata>>(Celldata);
+                var Heads = js.Deserialize<T_ViewInfo>(HeadData);
+                var user = Session["User"] as T_Auth_User;
+                string FilePath = HttpContext.Server.MapPath(@"~\ExcelViewData\{0}.ssjson");
+                FilePath = string.Format(FilePath, Heads.ViewGUID);
+                var bl = File_IO.File_Write(FilePath, ExcelJson);
+                if (bl)
+                {
+                    Heads.Path = FilePath;
+                    Heads.UserId = user.Id;
+                    Heads.CreateDate = DateTime.Now;
+                    db.T_ViewInfo.Add(Heads);
+                    db.T_ViewCelldata.AddRange(Datas);
+                    db.SaveChanges();
+                    return Json("success", JsonRequestBehavior.AllowGet);
+                }
+                else{ return Json("fail", JsonRequestBehavior.AllowGet); }
+            }
+            catch 
+            { return Json("fail", JsonRequestBehavior.AllowGet); }
+        }
+
+        //
+        [AdminLayout]
+        public ActionResult ViewShow()
+        {
+            return View();
+        }
+
+        public JsonResult GetTemplateJson(string Code)
+        {
+            if (string.IsNullOrWhiteSpace(Code))
+            {
+                return Json("");
+            }
+            string name = HttpContext.Server.MapPath(@"~\ExcelViewData\{0}.ssjson");
+            name = string.Format(name, Code);
+            return Json(File_IO.File_Read(name), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProssData(string Code)
+        {
+            //var sw = new Stopwatch();
+            //sw.Start();
+            var Pro_id = db.T_ViewInfo.Where(s => s.ViewGUID == Code).FirstOrDefault().Pro_id;
+
+            var BT_INFO = from l in db.T_BT_INFO select new {type = "Green",BT = l.BT_Code };
+
+            var datas = (from BT in db.T_BT_INFO
+                         join Cell in db.T_ViewCelldata on BT.BT_Code equals Cell.CellValue
+                         where Cell.ViewGUID == Code && BT.Pro_ID == Pro_id
+                         select new
+                         {
+                             type = "green",
+                             BTCode = Cell.CellValue,
+                             X = Cell.Cell_X,
+                             Y = Cell.Cell_Y
+                         });
+            var ff = datas.ToList();
+            //sw.Stop();
+            //var d = sw.ToString();
+            return Json(new { data = datas }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

@@ -1,0 +1,328 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Tree/metroStyle.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/select2/select2.min.css")" rel="stylesheet" />
+<link href="~/Scripts/split/splitstyle.css" rel="stylesheet" />
+
+<div class="row">
+    <input type="hidden" id="ID" />
+    <input type="hidden" id="PARENT_ID_" />
+    <div class="col-md-12" id="main_box">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h4 class="box-title" style="float:left;margin-top:5px">选择工程：&nbsp;&nbsp;</h4>
+                <div style="width:200px;float:left">
+                    <select class="form-control js-example-basic-multiple-limit" style="width : 100%" id="Choise_PJ"></select>
+                </div>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+                        <i class="fa fa-comments"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body box-profile" style="height: 660px;">
+                <div id="one" class="split split-horizontal">
+                    <div>
+                        <ul id="treeDemo" class="ztree"
+                            style="-moz-user-select: none;margin-top: 10px;
+                    border: 1px solid #617775;
+                    background: #f0f6e4;
+                    width: 100%;
+                    height: 630px;
+                    overflow-y: scroll;
+                    overflow-x: auto;"></ul>
+                    </div>
+                </div>
+
+                <div id="two" class="split split-horizontal">
+
+                    <div class="box box-warning box-solid"  style="height:630px; margin-top:10px">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">工程结构信息</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" id="Add">
+                                    <i class="fa fa-plus"></i>&nbsp;添加
+                                </button>
+                                <button type="button" class="btn btn-box-tool" id="Save">
+                                    <i class="fa fa-save"></i>&nbsp;保存
+                                </button>
+                                <button type="button" class="btn btn-box-tool" id="Del">
+                                    <i class="fa fa-minus"></i>&nbsp;删除
+                                </button>
+                            </div>
+                            <!-- /.box-tools -->
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="box-body" style="margin-top:16px;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">工程结构编码:</label>
+                                                    <div class="col-sm-8">
+                                                        <input class="form-control" id="txt_STRUCT_KEY_" name="STRUCT_KEY_" placeholder="工程结构编码...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">工程结构名称:</label>
+                                                    <div class="col-sm-8">
+                                                        <input class="form-control" id="txt_STRUCT_NAME_" name="STRUCT_NAME_" placeholder="工程结构名称...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">工程结构名称英文:</label>
+                                                    <div class="col-sm-8">
+                                                        <input class="form-control" id="txt_STRUCT_NAME_EN" name="STRUCT_NAME_EN" placeholder="工程结构名称(英文)...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">分类名称:</label>
+                                                    <div class="col-sm-8">
+                                                        @*<input class="form-control" id="txt_STRUCT_TYPEID" name="STRUCT_TYPEID" placeholder="分类名称">*@
+                                                        <select class="form-control js-example-basic-single" style="width : 100%" id="Choise_STRUCT_TYPEID">
+                                                            <option value="1">单元</option>
+                                                            <option value="2">转接件</option>
+                                                            <option value="3">辅材</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">排序号:</label>
+                                                    <div class="col-sm-8">
+                                                        <input class="form-control" id="txt_SORT_NO_" name="SORT_NO_" placeholder="分类名称">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">是否是最底层节点:</label>
+                                                    <div class="col-sm-8">
+                                                        @*<input class="form-control" id="txt_IS_LEAF_" name="IS_LEAF_" placeholder="分类名称">*@
+                                                        <input type="checkbox" id="txt_IS_LEAF_" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">是否可用:</label>
+                                                    <div class="col-sm-8">
+                                                        @*<input class="form-control" id="txt_Enable" name="Enable" placeholder="分类名称">*@
+                                                        <input type="checkbox" id="txt_Enable" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <label class="col-sm-2 control-label">备注:</label>
+                                                    <div class="col-sm-8">
+                                                        <textarea id="txt_Note" class="form-control" rows="6" placeholder="备注 ..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/dist/app.min.js"></script>
+<!--jq 增强div resize-->
+<script src="~/Scripts/resize.js"></script>
+<!--ztree-->
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.core.min.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="~/Scripts/TreeView/jquery.ztree.exedit.min.js"></script>
+<script src="~/Scripts/select2/select2.min.js"></script>
+<script src="~/Scripts/select2/zh-CN.js"></script>
+<script src="~/Scripts/split/split.min.js"></script>
+<script type="text/javascript">
+
+    function setTitle() {
+        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+        var nodes = zTree.transformToArray(zTree.getNodes());
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            var n = nodes[i];
+            n.name += "——" + n.title;
+            zTree.updateNode(n);
+        }
+    }
+    $(function () {
+        Split(['#one', '#two'], {
+            sizes: [25, 75], minSize: 0
+        });
+        $.get('/CNYD_STRUCT_TREE/GetProInfo', function (result) {
+            $("#Choise_PJ").select2({
+                data: result.data,
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+        });   
+        $("#Choise_PJ").on("select2:select", function (e) {
+            var PJ_ID_ = $("#Choise_PJ").val();
+            $.get('/CNYD_STRUCT_TREE/GetTA_Struct', { 'PJ_ID_': PJ_ID_ }, function (result) {
+                if (result.data.length > 0) {
+                    var setting = {
+                        view: { selectedMulti: false }
+                        , data: { simpleData: { enable: true }, key: { title: "title", name: "name" } }
+                        , onClick: zTreeOnClick
+                        , callback: { onClick: zTreeOnClick }
+                    };
+                    $.fn.zTree.init($("#treeDemo"), setting, result.data);
+                    setTitle();
+                }
+            });
+        });
+        $('#ID').val(-1);
+
+    });
+    //添加
+    $('#Add').click(function () {
+        $('#PARENT_ID_').val($('#ID').val());
+        Resetfrom();
+    });
+    //保存
+    $('#Save').click(function () {
+        var data = {};
+        data.ID_ = $('#ID').val();
+        data.PARENT_ID_ = $('#PARENT_ID_').val();
+        data.PJ_ID_ = $("#Choise_PJ").val();
+        data.STRUCT_KEY_ = $('#txt_STRUCT_KEY_').val();
+        data.STRUCT_NAME_ = $('#txt_STRUCT_NAME_').val();
+        data.STRUCT_NAME_EN = $('#txt_STRUCT_NAME_EN').val();
+        //data.STRUCT_TYPEID = $('#Choise_STRUCT_TYPEID').val();
+        data.SORT_NO_ = $('#txt_SORT_NO_').val();
+        data.IS_LEAF_ = $('#txt_IS_LEAF_').prop("checked");
+        data.Enable = $('#txt_Enable').prop("checked");
+        data.Note = $('#txt_Note').val();
+        $.post('/CNYD_STRUCT_TREE/Save', { 'data': JSON.stringify(data) }, function (rel) {
+            if (rel.Msg == 'success') {
+                alert("保存成功！");
+                var PJ_ID_ = $("#Choise_PJ").val();
+                $.get('/CNYD_STRUCT_TREE/GetTA_Struct', { 'PJ_ID_': PJ_ID_ }, function (result) {
+                    if (result.data.length > 0) {
+                        var setting = {
+                            view: { selectedMulti: false }
+                            , data: { simpleData: { enable: true } }
+                            , onClick: zTreeOnClick
+                            , callback: { onClick: zTreeOnClick }
+                        };
+                        $.fn.zTree.init($("#treeDemo"), setting, result.data);
+                        setTitle();
+                    }
+                });
+                Resetfrom();
+            } else {
+                alert("保存失败！");
+            }
+        });
+    });
+    //删除
+    $('#Del').click(function () {
+        $.post('/CNYD_STRUCT_TREE/Delete', { 'ID': $('#ID').val() }, function (rel) {
+            if (rel.Msg == 'success') {
+                alert("删除成功！");
+                var PJ_ID_ = $("#Choise_PJ").val();
+                $.get('/CNYD_STRUCT_TREE/GetTA_Struct', { 'PJ_ID_': PJ_ID_ }, function (result) {
+                    if (result.data.length > 0) {
+                        var setting = {
+                            view: { selectedMulti: false }
+                            , data: { simpleData: { enable: true } }
+                            , onClick: zTreeOnClick
+                            , callback: { onClick: zTreeOnClick }
+                        };
+                        $.fn.zTree.init($("#treeDemo"), setting, result.data);
+                        setTitle();
+                    }
+                });
+                Resetfrom();
+            } else {
+                alert("删除失败！");
+            }
+        });
+    });
+    function Resetfrom() {
+        $('#ID').val(-1);
+        $('#txt_STRUCT_KEY_').val('');
+        $('#txt_STRUCT_NAME_').val('');
+        $('#txt_STRUCT_NAME_EN').val('');
+        $('#Choise_STRUCT_TYPEID').select2({
+            language: "zh-CN",
+            placeholder: "请选TA类型..."
+        }).val(null).trigger("change");
+        $('#txt_SORT_NO_').val(0);
+        $('#txt_IS_LEAF_').prop("checked", false);
+        $('#txt_Enable').prop("checked", true);
+        $('#txt_Note').val('');
+    }
+    //点击树节点
+    function zTreeOnClick(event, treeId, treeNode) {
+        var ID = treeNode.id;
+        $.post('/CNYD_STRUCT_TREE/GetNode', { 'ID': ID }, function (rel) {
+            $('#ID').val(rel.data.ID_);
+            $('#txt_STRUCT_KEY_').val(rel.data.STRUCT_KEY_);
+            $('#txt_STRUCT_NAME_').val(rel.data.STRUCT_NAME_);
+            $('#txt_STRUCT_NAME_EN').val(rel.data.STRUCT_NAME_EN); 
+            $('#Choise_STRUCT_TYPEID').select2({
+                language: "zh-CN",
+                placeholder: "请选择工程..."
+            }).val(null).trigger("change");
+            $('#txt_SORT_NO_').val(rel.data.SORT_NO_); 
+            $('#txt_IS_LEAF_').prop("checked", rel.data.IS_LEAF_);
+            $('#txt_Enable').prop("checked", rel.data.Enable); 
+            $('#txt_Note').val(rel.data.Note);
+        });
+    }
+
+    function removeHoverDom(treeId, treeNode) {
+        $("#addBtn_" + treeNode.tId).unbind().remove();
+    };
+
+    $('#treeview4').treeview({
+        color: "#428bca",
+        data: defaultData
+    });
+
+</script>

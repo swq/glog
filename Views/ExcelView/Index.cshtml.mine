@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/AdminLTE.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/Skin/skin-blue.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/font-awesome/font-awesome.min.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/SpreadJS_CSS/gc.spread.sheets.excel2016colorful.10.0.1.css")" rel="stylesheet" />
+@*<link href="@Url.Content("~/Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css")" rel="stylesheet" />*@
+
+<div class="row" id="main">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-body box-profile">
+                <div class="btn-group" style='width: 100%;'>
+                    <button class="btn btn-toolbar" type="button" id="OpenFile">
+                        <span class="fa fa-folder-open"></span>&nbsp;打开文件
+                    </button>
+                    <button class="btn btn-toolbar" type="button" id="Save">
+                        <span class="fa fa-floppy-o"></span>&nbsp;保存
+                    </button>
+                    <button class="btn btn-toolbar " type="button" id="Clear">
+                        <span class="fa fa-eraser"></span>&nbsp;清除
+                    </button>
+                </div>
+                <div id='MianSpread' style='width: 100%; height: 750px;'></div>
+
+                <!-- 模态框（Modal） -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">保存</h4>
+                            </div>
+                            <form id="form" name="form" class="form-horizontal" action="#" method="post">
+                                <div class="modal-body">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label">选择工程:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" id="txt_Name" name="Name" placeholder="工程">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label">立面图名称:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" id="txt_Code" name="Code" placeholder="立面图名称">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label">幕墙结构类型:</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control  select2" id="txt_type" style=" width:100%;">
+                                                    <option>单元</option>
+                                                    <option>框架</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label">备注:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" id="txt_Icon" name="Icon" placeholder="备注">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-3 control-label">启用</label>
+                                            <div class="col-sm-8">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input id="chk_Enabled" type="checkbox" checked="checked" name="vehicle" value="Bike">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" id="btn_closefrom" data-dismiss="modal"><span class="fa fa-close" aria-hidden="true"></span>&nbsp;关闭</button>
+                                    <button type="button" class="btn btn-primary" id="btn_submit"><span class="fa fa-save" aria-hidden="true"></span>&nbsp;保存</button>
+                                </div>
+                            </form>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+            <div class="hidden">
+                <input type="file" id="fileinput">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section script{
+    <script src="~/Scripts/jQuery-2.2.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/dist/app.min.js"></script>
+    <script src="~/Scripts/SpreadJS/gc.spread.sheets.all.10.0.1.min.js"></script>
+    <script src="~/Scripts/SpreadJS/gc.spread.excelio.10.0.1.min.js"></script>
+    <script src="~/Scripts/SpreadJS/gc.spread.sheets.resources.zh.10.0.1.min.js"></script>
+    <!--jq 增强div resize-->
+    <script src="~/Scripts/resize.js"></script>
+
+    <script type="text/javascript">
+        var spread;
+        var excelIo;
+        var sheet;
+        //var spread_list;
+        $(function () {
+            $('#OpenFile').click(function () {
+                $('#fileinput').click();
+            });
+            $('#fileinput').change(function () {
+                var file = this.files[0];
+                importFile(file);
+            });
+            spread = new GC.Spread.Sheets.Workbook(document.getElementById('MianSpread'), { sheetCount: 1 });
+            excelIo = new GC.Spread.Excel.IO();
+            sheet = spread.getActiveSheet();
+        });
+
+        $('#main').resize(function () {
+            spread.refresh();
+        });
+
+        $('#Save').click(function () {
+            //var data = spread.getActiveSheet().getArray(24, 0, 28, 10);
+            //alert(data.length);
+            $('#myModal').modal();
+        });
+        $('#Clear').click(function () {
+            
+            sheet = spread.getActiveSheet();
+            var arr = sheet.getArray(0, 0, sheet.getRowCount(), sheet.getColumnCount());
+            var newdata = new Array();
+            for (var i = 0; i < sheet.getRowCount() ; i++)
+            {
+                var arr_link = new Array();
+                arr_link = arr[i];
+                for (var j = 0; j < sheet.getColumnCount() ; j++)
+                {
+                    if (arr_link[j] != null)
+                    {
+                        var Cell = new Object();
+                        Cell.data = arr_link[j];
+                        Cell.X = i;
+                        Cell.Y = j;
+                        newdata.push(Cell);
+                    }
+                }
+            }
+
+            $.each(newdata, function (i, n) {
+                alert('值=' + n.data + ',X=' + n.X + ',Y=' + n.Y);
+            });
+            
+            //spread.removeSheet(0);
+        });
+
+        function importFile(file) {
+            excelIo.open(file, function (json) {
+                var workbookObj = json;
+                spread.fromJSON(workbookObj);
+                
+            }, function (e) {
+                // process error
+                alert(e.errorMessage);
+            });
+        }
+    </script>
+}

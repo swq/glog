@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="spreadjs culture" content="zh-cn" />
+    <title>提料管理系统 | 开发版</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link href="Content/AdminLTE.min.css" rel="stylesheet" />
+    <!-- Skin -->
+    <link href="Content/Skin/skin-blue.css" rel="stylesheet" />
+    <!-- SpreadCSS -->
+    <link href="Content/SpreadJS_CSS/gcspread.sheets.excel2016colorful.9.40.20161.0.css" rel="stylesheet" />
+
+    <link href="Content/Tree/default.css" rel="stylesheet" />
+
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+
+        <!-- Main Header -->
+        <header class="main-header">
+
+            <!-- Logo -->
+            <a href="index2.html" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini">CNYD</span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg">CNYD</span><!--<img src="Content/img/Logo.png">-->
+            </a>
+
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <!-- Navbar Right Menu -->
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- User Account Menu -->
+                        <li class="dropdown user user-menu">
+                            <!-- Menu Toggle Button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <!-- The user image in the navbar-->
+                                <img src="Content/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                <span class="hidden-xs">LG0452</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- The user image in the menu -->
+                                <li class="user-header">
+                                    <img src="Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+
+                                    <p>
+                                        Alexander Pierce - Web Developer
+                                        <small>Member since Nov. 2012</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Body -->
+                                <li class="user-body">
+                                    <div class="row">
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Followers</a>
+                                        </div>
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Sales</a>
+                                        </div>
+                                        <div class="col-xs-4 text-center">
+                                            <a href="#">Friends</a>
+                                        </div>
+                                    </div>
+                                    <!-- /.row -->
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel">
+                    <div class="pull-left image">
+                        <img src="Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="pull-left info">
+                        <p>LG0452</p>
+                        <!-- Status -->
+                        <a href="#"><i class="fa fa-circle text-success"></i> Login </a>
+                    </div>
+                </div>
+
+                <!-- search form (Optional) -->
+                <form action="#" method="get" class="sidebar-form">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                <!-- /.search form -->
+                <!-- Sidebar Menu -->
+                <ul class="sidebar-menu">
+                    <li class="header">菜单</li>
+                    <!-- Optionally, you can add icons to the links -->
+                    <!--<li class="treeview">
+                        <a href="#"><i class="fa fa-link"></i> <span>gLog</span> <i class="fa fa-angle-left pull-right"></i></a>
+                        <ul class="treeview-menu">
+
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                            <li>
+                                <a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
+                                    <li>
+                                        <a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
+                                        <ul class="treeview-menu">
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                            <li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
+                        </ul>
+                    </li>-->
+                    <li><a href="#"><i class="fa fa-link"></i> <span>工程及结构任务</span></a></li>
+                    <li><a href="Master.html"><i class="fa fa-dashboard"></i> <span>材料申请(设计)</span></a></li>
+                    <li class="treeview">
+                        <a href="#"><i class="fa fa-files-o"></i> <span>材料物流</span></a>
+                        <ul class="treeview-menu">
+                            <li><a href="HtmlPage2.html"><i class="fa fa-circle-o"></i> Create New CNYD Stillage</a></li>
+                            <li><a href="HtmlPage1.html"><i class="fa fa-circle-o"></i> Edit New CNYD Stillage</a></li>
+                            <li><a href="HtmlPage3.html"><i class="fa fa-circle-o"></i> Shipment Heade Information</a></li>
+                            <li><a href="HtmlPage4.html"><i class="fa fa-circle-o"></i> Shipment Stillages</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#"><i class="fa fa-th"></i> <span>材料采购及付款申请</span></a></li>
+                    <li><a href="#"><i class="fa fa-pie-chart"></i> <span>Material Procurement</span></a></li>
+                    <li><a href="#"><i class="fa fa-laptop"></i> <span>Site Logistics</span></a></li>
+                    <li><a href="#"><i class="fa fa-edit"></i> <span>现场管理</span></a></li>
+                    <li><a href="#"><i class="fa fa-table"></i> <span>工程管理(销售)</span></a></li>
+                    <li><a href="#"><i class="fa fa-calendar"></i> <span>Project Mangement</span></a></li>
+                    <li class="active"><a href="#"><i class="fa fa-envelope"></i> <span>其他</span></a></li>
+                </ul>
+                <!-- /.sidebar-menu -->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <!--<section class="content-header">
+                <h1>
+                    钢材
+                    <small>提料单</small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> 提料单</a></li>
+                    <li class="active">钢材</li>
+                </ol>
+            </section>-->
+            <!-- Main content -->
+            <section class="content">
+
+                <!-- Your Page Content Here -->
+                <!-- 主内容 -->
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <div class="box box-primary direct-chat direct-chat-primary">
+                            <div class="box-header">
+                                <table>
+                                    <tr style="height:36px">
+                                        <td width="180px"><span style="font-size:14px">Delivery Note Ref.:</span></td>
+                                        <td width="180px"><input class="form-control input-sm" type="text" placeholder="Delivery Note"></td>
+                                        <td width="180px"><span style="font-size:14px">Planned Packing Date:</span></td>
+                                        <td width="120px"><input class="form-control input-sm" type="text" placeholder="Delivery Note"></td>
+                                        <td width="120px"><span style="font-size:14px">Stiage Type:</span></td>
+                                        <td width="120px"><input class="form-control input-sm" type="text" placeholder="Stiage Type:"></td>
+                                        <td width="21%"><span style="font-size:14px">Comments:</span></td>
+                                    </tr>
+                                    <tr style="height:36px">
+                                        <td width="130px"><span style="font-size:14px">Goods Prepared by:</span></td>
+                                        <td width="120px"><input class="form-control input-sm" type="text" placeholder="Goods Prepared"></td>
+                                        <td width="140px"><span style="font-size:14px">Actual Packing Date:</span></td>
+                                        <td width="100px"><input class="form-control input-sm" type="text" placeholder="Actual Packing"></td>
+                                        <td width="100px"><span style="font-size:14px">Stiage Width:</span></td>
+                                        <td width="90px"><input class="form-control input-sm" type="text" placeholder="Stiage Width:"></td>
+                                        <td rowspan="3" align="center"><textarea class="form-control" rows="3" placeholder="Enter ..."></textarea></td>
+                                    </tr>
+                                    <tr style="height:36px">
+                                        <td width="130px"><span style="font-size:14px">Goods Prepared for:</span></td>
+                                        <td width="120px"><input class="form-control input-sm" type="text" placeholder="Goods Prepared for"></td>
+                                        <td width="140px"><span style="font-size:14px">Status of Stiage:</span></td>
+                                        <td width="100px"><input class="form-control input-sm" type="text" placeholder="Status of Stiage:"></td>
+                                        <td width="100px"><span style="font-size:14px">Stiage Length:</span></td>
+                                        <td width="90px"><input class="form-control input-sm" type="text" placeholder="Stiage Length:"></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="height:36px">
+                                        <td width="130px"><span style="font-size:14px">Shipping Ref.:</span></td>
+                                        <td width="120px"><input class="form-control input-sm" type="text" placeholder="Delivery Note"></td>
+                                        <td width="140px"><span style="font-size:14px">Weight in kg:</span></td>
+                                        <td width="100px"><input class="form-control input-sm" type="text" placeholder="Weight in kg:"></td>
+                                        <td width="100px"><span style="font-size:14px">Stiage Height:</span></td>
+                                        <td width="90px"><input class="form-control input-sm" type="text" placeholder="Stiage Height:"></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="height:36px">
+                                        <td width="100%" colspan="7">
+                                            <div class="btn-group" style='float:right;width: 360px;'>
+                                                <button class="btn btn-primary" type="button">Save</button>
+                                                <button class="btn btn-primary" type="button">Add</button>
+                                                <button class="btn btn-primary" type="button">Delete</button>
+                                                <button class="btn btn-primary" type="button">Count</button>
+                                                <button class="btn btn-primary" type="button">Confrim Packing</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <!--<div class="box-tools">
+
+                                    <div class="btn-group" style='float:right;width: 180px;'>
+                                        <button class="btn btn-info" type="button">Save</button>
+                                        <button class="btn btn-info" type="button">Add</button>
+                                        <button class="btn btn-info" type="button">Delete</button>
+                                    </div>
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+
+                                        <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+
+                                        <div class="input-group-btn">
+                                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </div>
+                                </div>-->
+                            </div>
+                            <!--<div><button id='Save' type="button" class="btn btn-block btn-info" style='width: 50px;'>保存</button></div>-->
+                            <div id='MianSpread' style='width: 100%; height: 600px;'></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="pull-right hidden-xs">
+                Anything you want
+            </div>
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+        </footer>
+
+        <!-- Control Sidebar -->
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+    <!-- ./wrapper -->
+    <!-- REQUIRED JS SCRIPTS -->
+    <!-- jQuery 2.2.0 -->
+
+    <script src="Scripts/jQuery-2.2.0.min.js"></script>
+    <!-- Bootstrap 3.3.5 -->
+    <script src="Scripts/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="Scripts/dist/app.min.js"></script>
+    <!-- Spreadjs -->
+    <script src="Scripts/SpreadJS/gcspread.sheets.all.9.40.20161.0.min.js"></script>
+    <script src="Scripts/SpreadJS/gcspread.sheets.print.9.40.20161.0.min.js"></script>
+    <script src="Scripts/SpreadJS/gcspread.sheets.resources.zh.9.40.20161.0.min.js"></script>
+    <script src="Scripts/TreeView/bootstrap-treeview.js"></script>
+    <script type="text/javascript">
+        var spread;
+		$(
+            function () {
+            var spreadNS = GcSpread.Sheets;
+            spread = new GcSpread.Sheets.Spread($('#MianSpread')[0], { sheetCount: 1 });
+            var sheet = spread.getSheet(0);
+            sheet.setColumnCount(9, GcSpread.Sheets.SheetArea.viewport);
+            //列宽
+            sheet.setColumnWidth(0, 80);
+            sheet.setColumnWidth(1, 140);
+            sheet.setColumnWidth(2, 140);
+            sheet.setColumnWidth(3, 60);
+            sheet.setColumnWidth(4, 60);
+            sheet.setColumnWidth(5, 60);
+            sheet.setColumnWidth(6, 90);
+            sheet.setColumnWidth(7, 80);
+            sheet.setColumnWidth(8, 100);
+            //列头文本
+            sheet.setValue(0, 0, "BT Code", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 1, "Description EN", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 2, "BT Description CN", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 3, "Units", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 4, "Packed.", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 5, "Open", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 6, "Planned", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 7, "任务代码", GcSpread.Sheets.SheetArea.colHeader);
+            sheet.setValue(0, 8, "单号", GcSpread.Sheets.SheetArea.colHeader);
+            //var filter = sheet.rowFilter();
+            //filter.filterButtonVisible(0, true);
+            //获取行数
+            var count = sheet.getRowCount(GcSpread.Sheets.SheetArea.viewport);
+            //设置筛选
+            var filter = new spreadNS.HideRowFilter(new spreadNS.Range(0, 0, count, 9));
+            sheet.rowFilter(filter);
+        });
+
+    </script>
+</body>
+</html>
+
+
